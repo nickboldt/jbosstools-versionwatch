@@ -26,6 +26,13 @@ public abstract class BundleValidation {
 			b2.getIssues().add(i);
 		}		
 	}
+
+	public void skip(Bundle b2) {
+		Issue i = new Issue();
+		i.setMessage("Skipped: " + b2.getName());
+		i.setSeverity(severity);
+		b2.getIssues().add(i);
+	}
 	
 	/**
 	 * Defines validation rule
@@ -49,6 +56,10 @@ public abstract class BundleValidation {
 
 	public void setSeverity(int severity) {
 		this.severity = severity;
+	}
+
+	public static boolean isNullFilter(String filter) {
+		return filter == null || filter.equals("") || filter.equals(".*");
 	}
 
 	

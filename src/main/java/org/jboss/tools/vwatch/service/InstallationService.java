@@ -37,6 +37,8 @@ public class InstallationService {
 			
 			public boolean accept(File dir, String name) {
 				
+				log.setLevel(Settings.getLogLevel());
+
 				if (name.matches(".+\\d+\\.\\d+.\\d+.+")) {
 					
 					log.info(name + " accepted");
@@ -112,6 +114,7 @@ public class InstallationService {
 		// parse potfix TBD
 		bi.setPostfix("");
 
+		log.setLevel(Settings.getLogLevel());
 		log.debug(b.toString());
 		
 		// Add bundle instance type

@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.jboss.tools.vwatch.Settings;
 import org.apache.log4j.PatternLayout;
 import org.jboss.tools.vwatch.model.Installation;
 import org.jboss.tools.vwatch.service.EvaluationService;
@@ -21,9 +23,9 @@ import org.jboss.tools.vwatch.service.StopWatch;
 public class VWatch {
 
 	private String repoPath = "/opt/vw";
-	private String reportFilter = "";
+	private String filter = ".*";
+	private int loglevel = 4; // 7 = DEBUG, 6 = INFO, 4 = WARN (default), 3 = ERROR
 	private boolean md5checkEnabled = false;
-	
 	Logger log = Logger.getLogger(VWatch.class);
 	List<Installation> installations = new ArrayList<Installation>();
 
@@ -53,30 +55,50 @@ public class VWatch {
 	/**
 	 * Read configuration from outside: Supported parameters: -
 	 * vwatch.installationsDir : root with eclipse installations -
-	 * vwatch.reportFilter : filter for filtering only desired bundle names
+	 * vwatch.filter : restrict list of bundles to only those matching filter
 	 */
 	private void configureVWatch() {
+		loglevel = Integer.parseInt(System.getProperty("vwatch.loglevel"));
+		switch (loglevel) {
+		case 7:
+			Settings.setLogLevel(Level.DEBUG);
+			break;
+		case 6:
+			Settings.setLogLevel(Level.INFO);
+			break;
+		case 4:
+			Settings.setLogLevel(Level.WARN);
+			break;
+		case 3:
+			Settings.setLogLevel(Level.ERROR);
+			break;
+		case 0:
+			Settings.setLogLevel(Level.FATAL);
+			break;
+		default:
+			Settings.setLogLevel(Level.ALL);
+			break;
+		}
+		log.setLevel(Settings.getLogLevel());
+
 		String installationsDir = System.getProperty("vwatch.installationsDir");
 		if (installationsDir != null) {
 			repoPath = installationsDir;
-			log.info("Installations dir set from outside to:" + repoPath);
+			log.info("Installations dir set to:" + repoPath);
 		}
-		String filter = System.getProperty("vwatch.filter");
-		if (filter != null)
-			reportFilter = filter;
+
+		filter = System.getProperty("vwatch.filter");
 		
 		String md5check= System.getProperty("vwatch.md5check");
 		if (md5check != null) {
 			Settings.setMd5checkEnabled(true);
 		}
-		
 	}
 
 	/**
 	 * Basic programmatic log4j configuration
 	 */
 	private void configureLog4j() {
-
 		Logger root = Logger.getRootLogger();
 		root.addAppender(new ConsoleAppender(new PatternLayout(
 				PatternLayout.TTCC_CONVERSION_PATTERN)));
@@ -98,8 +120,9 @@ public class VWatch {
 	 */
 	private void evaluateInstallations() {
 		EvaluationService es = new EvaluationService();
-		installations = es.sortInstallations(installations);
-		es.findConflicts(installations);
+		// this is no longer needed because we can just sort the installations with Arrays.sort, which is much faster
+		//installations = es.sortInstallations(installations);
+		es.findConflicts(installations, filter);
 	}
 
 	/**
@@ -107,7 +130,7 @@ public class VWatch {
 	 */
 	private void createReport() {
 		ReportService rs = new ReportService();
-		rs.generateReport(installations, reportFilter);
+		rs.generateReport(installations, filter);
 	}
 
 	public boolean isMd5checkEnabled() {

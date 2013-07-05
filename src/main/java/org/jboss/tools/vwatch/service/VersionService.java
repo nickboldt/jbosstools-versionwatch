@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.jboss.tools.vwatch.Settings;
 import org.jboss.tools.vwatch.model.Installation;
 import org.jboss.tools.vwatch.model.Version;
 
@@ -27,6 +28,8 @@ public class VersionService {
 	public boolean isValid(String text) {
 
 		boolean isValid = false;
+
+		log.setLevel(Settings.getLogLevel());
 
 		// check format
 		if (text.matches("jbds-\\d+\\.\\d+\\.\\d+.*")) {
@@ -121,6 +124,7 @@ public class VersionService {
 			version.setMinor(Integer.parseInt(split[1]));
 			version.setBuild(Integer.parseInt(split[2]));
 		} catch (NumberFormatException e) {
+			log.setLevel(Settings.getLogLevel());
 			log.error("Cannot convert versions to numbers" + e.getMessage());
 		}
 

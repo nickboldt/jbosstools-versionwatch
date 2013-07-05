@@ -1,10 +1,13 @@
 Version Watch
 * tool for monitoring eclipse product bundles designed for JBoss Developer Studio
 
+Version 0.2.1
+* support for filtering bundles (now enabled for regular expression matching, using -Dfilter=regex)
+
 Version 0.2
 * added md5 check for same bundles (enabled by -Dvwatch.md5check) 
 * fixed multiple bundles issue
-* reports mutliple bundles 
+* reports multiple bundles 
 
 Version 0.1 
 * checks same bundle version

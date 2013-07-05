@@ -2,6 +2,7 @@ package org.jboss.tools.vwatch.service;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -66,6 +67,7 @@ public class FolderLookupSerivce  {
 		
 		File root = new File(repoPath);
 			File[] listFiles = root.listFiles();
+			Arrays.sort(listFiles);
 			for (File f : listFiles) {
 				if (f.isDirectory() && vs.isValid(f.getName())) {
 					Installation i = new Installation();					
