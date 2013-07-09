@@ -3,6 +3,9 @@ package org.jboss.tools.vwatch.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.jboss.tools.vwatch.Settings;
+
 /**
  * Bundle class, used for storing bundle related data
  * 
@@ -15,6 +18,7 @@ public class Bundle {
 	List<String> versions = new ArrayList<String>();
 	//List<Issue> issues = new ArrayList<Issue>();
 
+	Logger log = Logger.getLogger(Bundle.class);
 
 	public List<Issue> getIssues() {
 		return instances.get(0).getIssues();
@@ -26,8 +30,9 @@ public class Bundle {
 	}
 */
 	
-	// TODO: make this smarter so duplicate versions aren't considered multiple hits
+	// only add unique version values to avoid duplicates
 	public String getVersions() {
+		log.setLevel(Settings.getLogLevel());
 		String s = "";
 		for (int i = 0; i < getInstances().size(); i++) {
 			String thisVersion = getInstances().get(i).getVersion().toString();
@@ -35,14 +40,13 @@ public class Bundle {
 			{
 				versions.add(thisVersion);
 				s += getInstances().get(i).getVersion();
-				if (i < getInstances().size() - 1) {
+				if (i < getInstances().size() - 2) {
 					s +="<br/>";
 				}
 			}
 		}
 		if (versions.size()>1) {
-			System.out.println("Multiple versions of " + name + " found: " + s);
-			
+			log.warn("Multiple versions of " + name + " found: " + s.replaceAll("<br/>", ", "));
 		}
 		return s;
 	}
