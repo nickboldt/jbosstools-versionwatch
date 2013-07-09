@@ -8,7 +8,7 @@ package org.jboss.tools.vwatch.model;
  */
 public class Issue {
 
-	int severity = 0; // 0-3 , note, caution, warning, error
+	int severity = 0; // 0-3: note, caution, warning, error
 	String message;
 
 	public String getSeverityStr() {

@@ -12,6 +12,7 @@ import java.util.List;
 public class Bundle {
 	String name;
 	List<BundleInstance> instances = new ArrayList<BundleInstance>();
+	List<String> versions = new ArrayList<String>();
 	//List<Issue> issues = new ArrayList<Issue>();
 
 
@@ -25,19 +26,31 @@ public class Bundle {
 	}
 */
 	
+	// TODO: make this smarter so duplicate versions aren't considered multiple hits
 	public String getVersions() {
 		String s = "";
 		for (int i = 0; i < getInstances().size(); i++) {
-			s += getInstances().get(i).getVersion();
-			if (i < getInstances().size() - 1) {
-				s +="<br/>";
+			String thisVersion = getInstances().get(i).getVersion().toString();
+			if (!versions.contains(thisVersion)) 
+			{
+				versions.add(thisVersion);
+				s += getInstances().get(i).getVersion();
+				if (i < getInstances().size() - 1) {
+					s +="<br/>";
+				}
 			}
 		}
-		if (getInstances().size()>1) {
-			System.out.println("multi");
+		if (versions.size()>1) {
+			System.out.println("Multiple versions of " + name + " found: " + s);
+			
 		}
 		return s;
 	}
+
+	public void setVersions(List<String> versions) {
+		this.versions = versions;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -54,8 +67,9 @@ public class Bundle {
 		this.instances = instances;
 	}
 	
+	// only report on multiple instances if there are multiple instances AND versions
 	public boolean hasMultipleInstances() {
-		if (instances.size() > 1) return true;
+		if (instances.size() > 1 && versions.size() > 1) return true;
 		return false;
 	}
 

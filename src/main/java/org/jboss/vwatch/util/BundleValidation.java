@@ -54,6 +54,7 @@ public abstract class BundleValidation {
 		return severity;
 	}
 
+	// 0-3: note, caution, warning, error
 	public void setSeverity(int severity) {
 		this.severity = severity;
 	}

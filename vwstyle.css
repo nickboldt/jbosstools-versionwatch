@@ -22,6 +22,7 @@ td.version {
 p,h1,h2,h3 {
 	font-family: Arial, Helvetica, sans-serif;
 }
+
 p {
 	font-size: 9px;
 	color: blue;
@@ -31,6 +32,7 @@ tr.header {
 	background-color: rgba(0,255, 0,.5);
 	color: rgb(0, 0, 0);	
 }
+
 td.error {
 	background-color: rgb(250, 0, 0);
 	color: rgb(0, 0, 0);	
@@ -38,17 +40,16 @@ td.error {
 
 td.warning {
 	background-color: rgb(250,250 , 0);
-
 }
 
-td.causion {
+td.caution {
 	background-color: rgb(250, 250,200 );
-
 }
 
 td.none {
 	background-color: rgb(220, 220, 220);
 }
+
 td.normal {
 	background-color: rgb(255, 255, 255);
 }
@@ -57,11 +58,13 @@ tr:hover  {
   background-color: rgba(0,150,150,.5);
   color: rgba(0,100,100,1);
 }
+
 a:hover, a:visited, a:link, a:active
 {
     text-decoration: none;
     color: rgb(0, 0, 0);
 }
+
 .footspace {
 	width: 100px;
 	height: 2000px;

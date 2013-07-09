@@ -169,7 +169,7 @@ public class ReportService {
 					if (max == 0)
 						c = " class=\"normal\" ";
 					else if (max == 1)
-						c = " class=\"causion\" ";
+						c = " class=\"caution\" ";
 					else if (max == 2)
 						c = " class=\"warning\" ";
 					else if (max == 3)
@@ -209,6 +209,7 @@ public class ReportService {
 
 	private void printErrorLogInformation(Installation i, Bundle bundle) {
 		for (Issue issue : bundle.getIssues()) {
+			// only show severity 3 - error
 			if (issue.getSeverity() > 2)
 				log.warn(bundle.getName() + "," + bundle.getVersion()
 						+ " from " + i.getRootFolderName() + " "

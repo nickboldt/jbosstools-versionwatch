@@ -4,6 +4,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.util.Zip4jConstants;
+
 import org.apache.log4j.Logger;
 import org.jboss.tools.vwatch.Settings;
 import org.jboss.tools.vwatch.model.Bundle;
@@ -67,11 +72,36 @@ public class EvaluationService {
 	
 	private String getBundleMD5(Bundle b) {
 		File f = new File(b.getAbsolutePath());
-		if (f.isDirectory()) {
-			return "dir";
-		} else {
+		File f2 = new File(b.getAbsolutePath()+".jar");
+		if (f.isFile())
+		{
 			return MD5Service.getInstance().getMD5(f);
 		}
+
+		if (f2.isFile())
+		{
+			return MD5Service.getInstance().getMD5(f2);
+		}
+
+		if (f.isDirectory()) {
+			ZipFile bundleJar = null;
+			try {
+				log.warn("Bundle " + b.getName() + " is a folder; must jar it to compare MD5 sums.");
+				bundleJar = new ZipFile(f2);
+				ZipParameters parameters = new ZipParameters();
+				parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
+				parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
+				bundleJar.createZipFileFromFolder(b.getAbsolutePath(), parameters, true, 10485760);
+			} catch (ZipException e) {
+				e.printStackTrace();
+			}
+			if (bundleJar != null)
+			{
+				return MD5Service.getInstance().getMD5(f2);
+			}
+		}
+		log.warn("Could not generate MD5 for " + b.getAbsolutePath());
+		return null;
 	}
 	
 	/**
@@ -136,26 +166,26 @@ public class EvaluationService {
 					log.info("Version is not bumped, checking md5 for " + b1.getName());
 					b1.setMd5(getBundleMD5(b1));
 					b2.setMd5(getBundleMD5(b2));				
-										
+
 					// MD5 diff
 					if ((b1.getMd5().equals("dir") && !b2.getMd5().equals("dir")) || (!b1.getMd5().equals("dir") && b2.getMd5().equals("dir"))){
+						// this should never happen since we can now zip any plugin dirs and generate an MD5 for those jars
 						setSeverity(2);
-						setIssueMessage(getIssueMessage() + ";" + "MD5 cannot be checked, one bundle is dir");
+						setIssueMessage(getIssueMessage() + "; MD5 cannot be checked, one bundle is dir");
 					}
 					else if (b1.getMd5().equals("dir") && b2.getMd5().equals("dir")){
+						// this should never happen since we can now zip any plugin dirs and generate an MD5 for those jars
 						setSeverity(0);
 						setIssueMessage(getIssueMessage() + "Both bundles are dirs, md5 for dirs not yet supported");					
 						}
 					else if (!b1.getMd5().equals(b2.getMd5())) {
-						
 						if (b1.getFullName().equals(b2.getFullName())) {
 							setSeverity(3);
-							setIssueMessage(getIssueMessage() + ";" + "MD5 doesn't match for same build: " + b1.getMd5() + "!=" + b2.getMd5());
+							setIssueMessage(getIssueMessage() + "; MD5 doesn't match for same build: " + b1.getMd5() + "!=" + b2.getMd5());
 						} else {
-							setIssueMessage(getIssueMessage() + ";" + "MD5 doesn't match for different build");
+							setIssueMessage(getIssueMessage() + "; MD5 doesn't match for different build");
 						}
 					}
-					
 				}
 				return ret;
 			}
@@ -169,7 +199,7 @@ public class EvaluationService {
 				setSeverity(3);
 				setIssueMessage("Version must be higher or at least equal");
 				boolean ret =  vs.isVersionGreaterOrEqual(b1.getVersion(), b2.getVersion());
-				if (!ret) log.error("ERROR - Version must be higher or equal to its predecessor");
+				if (!ret) log.error("ERROR - Bundle " + b1.getName() + b1.getVersions() + " in " + i2.getVersion().toString() + " must be >= to version in " + i1.getVersion().toString());
 				return ret;
 			}
 		};
@@ -220,7 +250,7 @@ public class EvaluationService {
 						log.info("Multiple instances, not supported yet");
 					}
 				} else {
-					log.info("Not found " + b2.getName() + " in "
+					log.info("Could not find " + b2.getName() + " in "
 							+ i1.getRootFolderName());
 				}
 			}
