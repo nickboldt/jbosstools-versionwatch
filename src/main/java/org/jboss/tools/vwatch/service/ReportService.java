@@ -18,7 +18,7 @@ import org.jboss.tools.vwatch.Settings;
 import org.jboss.tools.vwatch.model.Bundle;
 import org.jboss.tools.vwatch.model.Installation;
 import org.jboss.tools.vwatch.model.Issue;
-import org.jboss.vwatch.util.BundleValidation;
+import org.jboss.vwatch.util.BundleValidator;
 import org.jboss.tools.vwatch.model.Severity;
 
 /**
@@ -53,9 +53,9 @@ public class ReportService {
 					+ style + "</style></head>");
 			bw.append("<body><h2>JBDS Version Watch</h2>");
 
-			bw.append("<h2>Feature list" + (!BundleValidation.isNullFilter(filter) ? " for filter = " + filter : "") + "</h2>");
+			bw.append("<h2>Feature list" + (!BundleValidator.isNullFilter(filter) ? " for filter = " + filter : "") + "</h2>");
 			generateTable(bw, installations, true, filter);
-			bw.append("<br/><h2>Plugin list" + (!BundleValidation.isNullFilter(filter) ? " for filter = " + filter : "") + "</h2>");
+			bw.append("<br/><h2>Plugin list" + (!BundleValidator.isNullFilter(filter) ? " for filter = " + filter : "") + "</h2>");
 			generateTable(bw, installations, false, filter);
 
 			long elapsed = StopWatch.stop();
@@ -110,7 +110,7 @@ public class ReportService {
 
 		for (Installation i : installations) {
 			for (Bundle b : i.getBundles(feature)) {
-				if (BundleValidation.isNullFilter(filter) || b.getName().matches(filter))
+				if (BundleValidator.isNullFilter(filter) || b.getName().matches(filter))
 					/*
 					if (featureSet.contains(b.getName())) {
 						Issue i = new Issue();
@@ -131,7 +131,7 @@ public class ReportService {
 		if (feature) {
 			bundles = "Features";
 		}
-		if (!BundleValidation.isNullFilter(filter))
+		if (!BundleValidator.isNullFilter(filter))
 		{
 			bundles += " (filter=/" + filter + "/)";
 		}

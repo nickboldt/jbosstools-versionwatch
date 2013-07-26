@@ -3,7 +3,7 @@ package org.jboss.tools.vwatch.issue;
 import org.jboss.tools.vwatch.model.Bundle;
 import org.jboss.tools.vwatch.model.Issue;
 import org.jboss.tools.vwatch.model.Severity;
-import org.jboss.tools.vwatch.validator.VersionDecreasedValidation;
+import org.jboss.tools.vwatch.validator.VersionDecreasedValidator;
 
 /**
  * This issue describes situation when there component version is lower than
@@ -21,6 +21,6 @@ public class VersionDecreasedIssue extends Issue {
 		this.description = "Version must be higher";
 		this.severity = Severity.ERROR;
 		this.referenceBundle = referenceBundle;
-		this.validation = new VersionDecreasedValidation();
+		this.validation = new VersionDecreasedValidator();
 	}		
 }

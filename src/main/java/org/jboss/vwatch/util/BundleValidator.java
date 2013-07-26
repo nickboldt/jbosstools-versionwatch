@@ -10,11 +10,11 @@ import org.jboss.tools.vwatch.service.EvaluationService;
  * @author jpeterka
  *
  */
-public abstract class BundleValidation {
+public abstract class BundleValidator {
 	
 	private int severity = 0;	
 	private String issueMessage;
-	public Logger log = Logger.getLogger(BundleValidation.class);
+	public Logger log = Logger.getLogger(BundleValidator.class);
 	
 	
 	/**
@@ -55,7 +55,6 @@ public abstract class BundleValidation {
 		return severity;
 	}
 
-	// 0-3: note, caution, warning, error
 	public void setSeverity(int severity) {
 		this.severity = severity;
 	}

@@ -67,9 +67,6 @@ public class Bundle {
 		return instances.get(0).getVersion();
 	}
 	
-	public String getAbsolutePath() {
-		return (instances.get(0).getAbsolutePath());
-	}
 	
 	public String getMd5() {
 		return (instances.get(0).getMd5());
@@ -110,4 +107,5 @@ public class Bundle {
 		}
 		return null;
 	}
+	
 }

@@ -4,9 +4,9 @@ import org.jboss.tools.vwatch.issue.VersionDecreasedIssue;
 import org.jboss.tools.vwatch.model.Bundle;
 import org.jboss.tools.vwatch.model.Issue;
 import org.jboss.tools.vwatch.service.VersionService;
-import org.jboss.vwatch.util.BundleValidation;
+import org.jboss.vwatch.util.BundleValidator;
 
-public class VersionDecreasedValidation extends BundleValidation {
+public class VersionDecreasedValidator extends BundleValidator {
 	final VersionService vs = new VersionService();
 
 	@Override

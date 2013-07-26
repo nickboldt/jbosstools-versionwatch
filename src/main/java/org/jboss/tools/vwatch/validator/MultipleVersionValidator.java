@@ -3,11 +3,9 @@ package org.jboss.tools.vwatch.validator;
 import org.jboss.tools.vwatch.issue.MultipleVersionIssue;
 import org.jboss.tools.vwatch.model.Bundle;
 import org.jboss.tools.vwatch.model.Issue;
-import org.jboss.tools.vwatch.service.VersionService;
-import org.jboss.vwatch.util.BundleValidation;
+import org.jboss.vwatch.util.BundleValidator;
 
-public class MultipleVersionValidation extends BundleValidation {
-	final VersionService vs = new VersionService();
+public class MultipleVersionValidator extends BundleValidator {
 
 	@Override
 	public boolean isValid(Bundle b1, Bundle b2) {

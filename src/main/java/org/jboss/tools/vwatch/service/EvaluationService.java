@@ -14,8 +14,9 @@ import org.jboss.tools.vwatch.Settings;
 import org.jboss.tools.vwatch.model.Bundle;
 import org.jboss.tools.vwatch.model.Installation;
 import org.jboss.tools.vwatch.model.Issue;
-import org.jboss.tools.vwatch.validator.VersionDecreasedValidation;
-import org.jboss.vwatch.util.BundleValidation;
+import org.jboss.tools.vwatch.validator.MD5Validation;
+import org.jboss.tools.vwatch.validator.VersionDecreasedValidator;
+import org.jboss.vwatch.util.BundleValidator;
 
 /**
  * Evaluation Service
@@ -26,6 +27,7 @@ import org.jboss.vwatch.util.BundleValidation;
 public class EvaluationService {
 
 	Logger log = Logger.getLogger(EvaluationService.class);
+	List<BundleValidator> validators = new ArrayList<BundleValidator>();
 
 	/**
 	 * Sorts installations according to versions
@@ -76,13 +78,17 @@ public class EvaluationService {
 			log.debug("Finding conflicts in installation: "
 					+ installations.get(i + 1).getRootFolderAbsolutePath());
 
+			// features
 			findConflictsBetweenTwo(installations.get(i),
 					installations.get(i + 1), filter, true);
+			
+			// plugins
 			findConflictsBetweenTwo(installations.get(i),
 					installations.get(i + 1), filter, false);
 		}
 	}
 
+/*
 	private String getBundleMD5(Bundle b) {
 		File f = new File(b.getAbsolutePath());
 		File f2 = new File(b.getAbsolutePath() + ".jar");
@@ -116,6 +122,7 @@ public class EvaluationService {
 		log.warn("Could not generate MD5 for " + b.getAbsolutePath());
 		return null;
 	}
+*/
 
 	/**
 	 * Finds conflicts between two installations TODO: Separate validation rules
@@ -130,15 +137,18 @@ public class EvaluationService {
 	private void findConflictsBetweenTwo(final Installation i1,
 			final Installation i2, String filter, boolean feature) {
 
-		// version lower or equeal
-		BundleValidation versionDecreasedValidation = new VersionDecreasedValidation();
+		// prepare validator list		
+		validators.add(new VersionDecreasedValidator());
+		if (Settings.isMd5checkEnabled()) {
+			validators.add(new MD5Validation());
+		}
 
-		copyPreviousConflicts(i1, i2, feature);
+		checkFixesForPreviousIssues(i1, i2, feature);
 
-		findVersionConflicts(i1, i2, feature, versionDecreasedValidation);
+		findVersionConflicts(i1, i2, feature);		
 	}
 
-	private void copyPreviousConflicts(Installation i1, Installation i2,
+	private void checkFixesForPreviousIssues(Installation i1, Installation i2,
 			boolean feature) {
 
 		BundleService bs = new BundleService();
@@ -160,10 +170,10 @@ public class EvaluationService {
 		}
 
 	}
-
+	
 	private void checkFixes(Bundle b1, Bundle b2) {
 		for (Issue i : b1.getIssues()) {
-			BundleValidation validation = i.getValidation();
+			BundleValidator validation = i.getValidation();
 			Bundle refBundle = i.getReferenceBundle();
 			if (!validation.isValid(refBundle, b2)) {
 				validation.addIssue(refBundle, b2);
@@ -172,21 +182,21 @@ public class EvaluationService {
 	}
 
 	private void findVersionConflicts(Installation i1, Installation i2,
-			boolean feature, BundleValidation validation) {
+			boolean feature) {
 		BundleService bs = new BundleService();
 
 		log.setLevel(Settings.getLogLevel());
 
 		for (Bundle b2 : i2.getBundles(feature)) {
 			// only validate if the filter matches, which saves a ton of time
-			if (BundleValidation.isNullFilter(Settings.getFilter())
+			if (BundleValidator.isNullFilter(Settings.getFilter())
 					|| b2.getName().matches(Settings.getFilter())) {
 				Bundle b1 = bs.getBundleFromList(i1.getBundles(feature),
 						b2.getName());
 				if (b1 != null) {
 					if (!b1.hasMultipleInstances()
 							&& !b2.hasMultipleInstances()) {
-						validation.validate(b1, b2);
+						validate(b1, b2);
 					} else {
 						log.info("Multiple instances, not supported yet");
 					}
@@ -197,5 +207,11 @@ public class EvaluationService {
 			}
 		}
 
+	}
+	
+	private void validate(Bundle b1, Bundle b2) {
+		for (BundleValidator v : validators) {
+			v.validate(b1, b2);
+		}
 	}
 }
