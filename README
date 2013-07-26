@@ -1,0 +1,2 @@
+Usage:
+clean test -DinstallationsDir="C:\vw" -Dvwatch.md5check

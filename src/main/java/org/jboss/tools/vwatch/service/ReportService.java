@@ -19,6 +19,7 @@ import org.jboss.tools.vwatch.model.Bundle;
 import org.jboss.tools.vwatch.model.Installation;
 import org.jboss.tools.vwatch.model.Issue;
 import org.jboss.vwatch.util.BundleValidation;
+import org.jboss.tools.vwatch.model.Severity;
 
 /**
  * Service providing final report generating from given installations
@@ -209,11 +210,10 @@ public class ReportService {
 
 	private void printErrorLogInformation(Installation i, Bundle bundle) {
 		for (Issue issue : bundle.getIssues()) {
-			// only show severity 3 - error
-			if (issue.getSeverity() > 2)
-				log.warn(bundle.getName() + "," + bundle.getVersion()
+			if (issue.getSeverity() == Severity.ERROR)
+				log.error(bundle.getName() + "," + bundle.getVersion()
 						+ " from " + i.getRootFolderName() + " "
-						+ issue.getMessage());
+						+ issue.getDescription());
 		}
 	}
 

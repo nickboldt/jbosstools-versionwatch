@@ -91,9 +91,9 @@ public class VersionService {
 			return i1;
 		if (v1.getMinor() > v2.getMinor())
 			return i2;
-		if (v1.getMinor() < v2.getMinor())
+		if (v1.getBuild() < v2.getBuild())
 			return i1;
-		if (v1.getMinor() > v2.getMinor())
+		if (v1.getBuild() > v2.getBuild())
 			return i2;
 
 		log.warn("Versions identical, keeping first one");

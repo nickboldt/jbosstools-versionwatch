@@ -13,26 +13,31 @@ import org.apache.log4j.Logger;
 import org.jboss.tools.vwatch.Settings;
 import org.jboss.tools.vwatch.model.Bundle;
 import org.jboss.tools.vwatch.model.Installation;
+import org.jboss.tools.vwatch.model.Issue;
+import org.jboss.tools.vwatch.validator.VersionDecreasedValidation;
 import org.jboss.vwatch.util.BundleValidation;
 
 /**
- * Evaluation Service 
+ * Evaluation Service
+ * 
  * @author jpeterka
- *
+ * 
  */
 public class EvaluationService {
 
 	Logger log = Logger.getLogger(EvaluationService.class);
-	
+
 	/**
 	 * Sorts installations according to versions
 	 * 
-	 * @param originalList original unsorted list
+	 * @param originalList
+	 *            original unsorted list
 	 * @return sorted installations from min version to max version
 	 */
 	public List<Installation> sortInstallations(List<Installation> originalList) {
 
 		List<Installation> sortedList = new ArrayList<Installation>();
+
 		Installation min = originalList.get(0);
 		VersionService vs = new VersionService();
 		log.setLevel(Settings.getLogLevel());
@@ -41,20 +46,27 @@ public class EvaluationService {
 		for (int i = 0; i < steps; i++) {
 			min = originalList.get(0);
 			for (int j = 0; j < originalList.size() - 1; j++) {
-				min = vs.getMinInstallation(min, originalList.get(j + 1));
+				if (min.getRootFolderName().compareTo(
+						originalList.get(j + 1).getRootFolderName()) > 0) {
+					min = originalList.get(j + 1);
+				}
 			}
 			sortedList.add(min);
 			originalList.remove(min);
+			log.info("Sorted:" + min.getRootFolderName());
 		}
 
 		log.info("Original list: " + originalList.toString());
 		log.info("Sorted list: " + sortedList.toString());
+
 		return sortedList;
 	}
 
 	/**
 	 * Finds conflicts in given installations
-	 * @param installations installation list for evaluation
+	 * 
+	 * @param installations
+	 *            installation list for evaluation
 	 */
 	public void findConflicts(List<Installation> installations, String filter) {
 
@@ -63,190 +75,119 @@ public class EvaluationService {
 		for (int i = 0; i < installations.size() - 1; i++) {
 			log.debug("Finding conflicts in installation: "
 					+ installations.get(i + 1).getRootFolderAbsolutePath());
+
 			findConflictsBetweenTwo(installations.get(i),
 					installations.get(i + 1), filter, true);
 			findConflictsBetweenTwo(installations.get(i),
 					installations.get(i + 1), filter, false);
 		}
 	}
-	
+
 	private String getBundleMD5(Bundle b) {
 		File f = new File(b.getAbsolutePath());
-		File f2 = new File(b.getAbsolutePath()+".jar");
-		if (f.isFile())
-		{
+		File f2 = new File(b.getAbsolutePath() + ".jar");
+		if (f.isFile()) {
 			return MD5Service.getInstance().getMD5(f);
 		}
 
-		if (f2.isFile())
-		{
+		if (f2.isFile()) {
 			return MD5Service.getInstance().getMD5(f2);
 		}
 
 		if (f.isDirectory()) {
 			ZipFile bundleJar = null;
 			try {
-				log.warn("Bundle " + b.getName() + " is a folder; must jar it to compare MD5 sums.");
+				log.warn("Bundle " + b.getName()
+						+ " is a folder; must jar it to compare MD5 sums.");
 				bundleJar = new ZipFile(f2);
 				ZipParameters parameters = new ZipParameters();
 				parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
-				parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
-				bundleJar.createZipFileFromFolder(b.getAbsolutePath(), parameters, true, 10485760);
+				parameters
+						.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
+				bundleJar.createZipFileFromFolder(b.getAbsolutePath(),
+						parameters, true, 10485760);
 			} catch (ZipException e) {
 				e.printStackTrace();
 			}
-			if (bundleJar != null)
-			{
+			if (bundleJar != null) {
 				return MD5Service.getInstance().getMD5(f2);
 			}
 		}
 		log.warn("Could not generate MD5 for " + b.getAbsolutePath());
 		return null;
 	}
-	
+
 	/**
-	 * Finds conflicts between two installations
-	 * TODO: Separate validation rules
-	 * @param i1 first installation
-	 * @param i2 second installation
-	 * @param feature boolean to set whether to use feature or plugin pack 
+	 * Finds conflicts between two installations TODO: Separate validation rules
+	 * 
+	 * @param i1
+	 *            first installation
+	 * @param i2
+	 *            second installation
+	 * @param feature
+	 *            boolean to set whether to use feature or plugin pack
 	 */
 	private void findConflictsBetweenTwo(final Installation i1,
 			final Installation i2, String filter, boolean feature) {
 
-		final VersionService vs = new VersionService();
-	
-		log.setLevel(Settings.getLogLevel());
+		// version lower or equeal
+		BundleValidation versionDecreasedValidation = new VersionDecreasedValidation();
 
-		// Validation condition preparation
-		// major
-		BundleValidation majorHigher = new BundleValidation() {
+		copyPreviousConflicts(i1, i2, feature);
 
-			@Override
-			public boolean isValid(Bundle b1, Bundle b2) {				
-				setSeverity(1);
-				setIssueMessage("Major version is the same");
-				return vs.isMajorGreater(b1.getVersion(), b2.getVersion());
-			}
-		};
-		//minor
-		BundleValidation minorHigher = new BundleValidation() {
+		findVersionConflicts(i1, i2, feature, versionDecreasedValidation);
+	}
 
-			@Override
-			public boolean isValid(Bundle b1, Bundle b2) {
-				setSeverity(1);
-				setIssueMessage("Minor version is the same");
-				return vs.isMinorGreater(b1.getVersion(), b2.getVersion());
-			}
-		};
-		//build
-		BundleValidation buildHigher = new BundleValidation() {
+	private void copyPreviousConflicts(Installation i1, Installation i2,
+			boolean feature) {
 
-			@Override
-			public boolean isValid(Bundle b1, Bundle b2) {
-				setSeverity(1);
-				setIssueMessage("Build version is the same");
-				return vs.isBuildGreater(b1.getVersion(), b2.getVersion());
-			}
-		};
-		
-		//version equals
-		BundleValidation versionNotBumped= new BundleValidation() {
+		BundleService bs = new BundleService();
+		for (Bundle b2 : i2.getBundles(feature)) {
+			Bundle b1 = bs.getBundleFromList(i1.getBundles(feature),
+					b2.getName());
+			if (b1 != null) {
 
-			@Override
-			public boolean isValid(Bundle b1, Bundle b2) {
-				setSeverity(2);
-				setIssueMessage("Version is not bumped");
-				boolean ret =  !vs.isVersionEqual(b1.getVersion(), b2.getVersion());												
-				
-				log.setLevel(Settings.getLogLevel());
-
-				// MD5 check
-				if (!ret && Settings.isMd5checkEnabled()) {
-					log.info("Version is not bumped, checking md5 for " + b1.getName());
-					b1.setMd5(getBundleMD5(b1));
-					b2.setMd5(getBundleMD5(b2));				
-
-					// MD5 diff
-					if ((b1.getMd5().equals("dir") && !b2.getMd5().equals("dir")) || (!b1.getMd5().equals("dir") && b2.getMd5().equals("dir"))){
-						// this should never happen since we can now zip any plugin dirs and generate an MD5 for those jars
-						setSeverity(2);
-						setIssueMessage(getIssueMessage() + "; MD5 cannot be checked, one bundle is dir");
-					}
-					else if (b1.getMd5().equals("dir") && b2.getMd5().equals("dir")){
-						// this should never happen since we can now zip any plugin dirs and generate an MD5 for those jars
-						setSeverity(0);
-						setIssueMessage(getIssueMessage() + "Both bundles are dirs, md5 for dirs not yet supported");					
-						}
-					else if (!b1.getMd5().equals(b2.getMd5())) {
-						if (b1.getFullName().equals(b2.getFullName())) {
-							setSeverity(3);
-							setIssueMessage(getIssueMessage() + "; MD5 doesn't match for same build: " + b1.getMd5() + "!=" + b2.getMd5());
-						} else {
-							setIssueMessage(getIssueMessage() + "; MD5 doesn't match for different build");
-						}
-					}
+				// Check fixes
+				if (!b1.hasMultipleInstances() && !b2.hasMultipleInstances()) {
+					checkFixes(b1, b2);
+				} else {
+					log.info("Multiple instances, not supported yet");
 				}
-				return ret;
+			} else {
+				log.info("Not found " + b2.getName() + " in "
+						+ i1.getRootFolderName());
 			}
-		};
-		
-		//version lower or equal
-		BundleValidation versionGreaterOrEqual = new BundleValidation() {
+		}
 
-			@Override
-			public boolean isValid(Bundle b1, Bundle b2) {
-				setSeverity(3);
-				setIssueMessage("Version must be higher or at least equal");
-				boolean ret =  vs.isVersionGreaterOrEqual(b1.getVersion(), b2.getVersion());
-				if (!ret) log.error("ERROR - Bundle " + b1.getName() + b1.getVersions() + " in " + i2.getVersion().toString() + " must be >= to version in " + i1.getVersion().toString());
-				return ret;
+	}
+
+	private void checkFixes(Bundle b1, Bundle b2) {
+		for (Issue i : b1.getIssues()) {
+			BundleValidation validation = i.getValidation();
+			Bundle refBundle = i.getReferenceBundle();
+			if (!validation.isValid(refBundle, b2)) {
+				validation.addIssue(refBundle, b2);
 			}
-		};
-	
-		// Validation execution
-		findVersionConflicts(i1, i2, feature, versionGreaterOrEqual, filter);
-		findVersionConflicts(i1, i2, feature, versionNotBumped, filter);
-		
-		// major higher
-		if (vs.isMajorDiff(i1.getVersion(), i2.getVersion())) {
-			log.debug("Major diff finding between " + i1.getRootFolderName()
-					+ " and " + i2.getRootFolderName());
-
-			findVersionConflicts(i1, i2, feature, majorHigher, filter);
-		}
-		// minor higher
-		else if (vs.isMinorDiff(i1.getVersion(), i2.getVersion())) {
-			log.debug("Minor diff finding between " + i1.getRootFolderName()
-					+ " and " + i2.getRootFolderName());
-
-			findVersionConflicts(i1, i2, feature, minorHigher, filter);
-		}
-		// build higher
-		else if (vs.isBuildDiff(i1.getVersion(), i2.getVersion())) {
-			log.debug("Build diff finding between " + i1.getRootFolderName()
-					+ " and " + i2.getRootFolderName());
-
-			findVersionConflicts(i1, i2, feature, buildHigher, filter);
 		}
 	}
 
 	private void findVersionConflicts(Installation i1, Installation i2,
-			boolean feature, BundleValidation validation, String filter) {
+			boolean feature, BundleValidation validation) {
 		BundleService bs = new BundleService();
-		
+
 		log.setLevel(Settings.getLogLevel());
 
 		for (Bundle b2 : i2.getBundles(feature)) {
 			// only validate if the filter matches, which saves a ton of time
-			if (BundleValidation.isNullFilter(filter) || b2.getName().matches(filter))
-			{
-				Bundle b1 = bs.getBundleFromList(i1.getBundles(feature), b2.getName());
+			if (BundleValidation.isNullFilter(Settings.getFilter())
+					|| b2.getName().matches(Settings.getFilter())) {
+				Bundle b1 = bs.getBundleFromList(i1.getBundles(feature),
+						b2.getName());
 				if (b1 != null) {
-					if (!b1.hasMultipleInstances() && !b2.hasMultipleInstances()) {
+					if (!b1.hasMultipleInstances()
+							&& !b2.hasMultipleInstances()) {
 						validation.validate(b1, b2);
-					}
-					else  {
+					} else {
 						log.info("Multiple instances, not supported yet");
 					}
 				} else {
@@ -257,5 +198,4 @@ public class EvaluationService {
 		}
 
 	}
-
 }

@@ -58,7 +58,14 @@ public class VWatch {
 	 * vwatch.filter : restrict list of bundles to only those matching filter
 	 */
 	private void configureVWatch() {
-		loglevel = Integer.parseInt(System.getProperty("vwatch.loglevel"));
+		String logLevelStr = System.getProperty("vwatch.loglevel");
+		if (logLevelStr != null) { 
+			loglevel = Integer.parseInt(logLevelStr);
+		}
+		else {
+			loglevel = 7;
+		}
+		
 		switch (loglevel) {
 		case 7:
 			Settings.setLogLevel(Level.DEBUG);
@@ -87,9 +94,10 @@ public class VWatch {
 			log.info("Installations dir set to:" + repoPath);
 		}
 
-		filter = System.getProperty("vwatch.filter");
+		String filter = System.getProperty(Settings.filterVMProperty);
+		Settings.setFilter(filter);
 		
-		String md5check= System.getProperty("vwatch.md5check");
+		String md5check= System.getProperty(Settings.md5checkVMProperty);
 		if (md5check != null) {
 			Settings.setMd5checkEnabled(true);
 		}

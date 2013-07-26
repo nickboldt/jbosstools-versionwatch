@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.jboss.tools.vwatch.Settings;
+import org.jboss.tools.vwatch.issue.MultipleVersionIssue;
 import org.jboss.tools.vwatch.model.Bundle;
 import org.jboss.tools.vwatch.model.BundleInstance;
 import org.jboss.tools.vwatch.model.BundleType;
@@ -16,7 +17,7 @@ import org.jboss.tools.vwatch.model.Version;
 
 /**
  * Service providing single installation methods like bundle loading 
- * @author jpeterka
+ * @author Jiri Peterka
  *
  */
 public class InstallationService {
@@ -59,8 +60,7 @@ public class InstallationService {
 		
 		for (String record  : list ) {			
 			Bundle bundle = parseAndGetBundle(installation, feature, record);
-			
-			installation.getBundles(feature).add(bundle);
+			if (bundle != null) installation.getBundles(feature).add(bundle);
 		}		
 	}
 
@@ -72,42 +72,67 @@ public class InstallationService {
 	private Bundle parseAndGetBundle(Installation installation, boolean feature, String record) {
 		//Bundle b = new Bundle();
 		
-		// parse version
+		// parse version from record
 		Pattern pattern = Pattern.compile("\\d+\\.\\d+\\.\\d+");
 		Matcher m = pattern.matcher(record);
 		m.find();
 		String versionString = m.group();
 			
+		// parse major, minor and build version
 		String[] split = versionString.split("\\.");			
 		Version v = new Version();
 		v.setMajor(Integer.parseInt(split[0]));
 		v.setMinor(Integer.parseInt(split[1]));
 		v.setBuild(Integer.parseInt(split[2]));
 			
+		// create bundle instance
 		BundleInstance bi = new BundleInstance();
 		bi.setVersion(v);
-		bi.setFullName(record);
 		bi.setAbsolutePath(installation.getAbsoluteBundleDir(feature) + File.separator + record);
-			
+		
+		// get bundle type
+		int bundleType = BundleType.NONE;
+		if (new File(bi.getAbsolutePath()).isFile()) {
+			bundleType = BundleType.JAR;
+		} else {
+			bundleType = BundleType.DIR;	
+		}
+		
+		// Set full name (remove jar extension if any);
+		if (bundleType == BundleType.JAR) {
+			String fullName = record;
+			String withoutJar = fullName.substring(0, fullName.length() - 4);
+			bi.setFullName(withoutJar);
+		}
+		else {
+			bi.setFullName(record);
+		}
+	
+		// parse bundle name
 		Pattern p2 = Pattern.compile("^.*?(?=_\\d+\\.\\d+\\.\\d+)");
 		Matcher m2 = p2.matcher(record);
 		m2.find();
 		String found = m2.group();
 		
-		
 		BundleService bs = new BundleService();
 		Bundle b = bs.getBundleFromList(installation.getBundles(feature), found);
-		if (b == null) {
+		if (b == null ) {
 			b = new Bundle();
 			b.setName(found);
 		} else
-		{
-			Issue e = new Issue();
-			e.setSeverity(2);
-			e.setMessage("Multiple versions");
-			b.getIssues().add(e);
+		{			
+			// if it contains same instance
+			BundleInstance instance = b.getInstance(bi);
+			if (instance != null) {
+				// just add BundleType flag
+				instance.setBundleType(instance.getBundleType() | bundleType);
+				// return null, instance already exists
+				return null;
+			} else {
+				Issue e = new MultipleVersionIssue(b);
+				b.getIssues().add(e);				
+			}
 		}
-
 		
 		bi.setBundle(b);		
 				
@@ -118,19 +143,10 @@ public class InstallationService {
 		log.debug(b.toString());
 		
 		// Add bundle instance type
-		File f = new File(installation.getAbsoluteBundleDir(feature) + File.separator + record);			
-		bi.setBundleType(getBundleType(f));
-
+		File f = new File(installation.getAbsoluteBundleDir(feature) + File.separator + record);
+		
+		bi.setBundleType(bi.getBundleType() | bundleType);
 		b.getInstances().add(bi);
 		return b;							
 	}
-	
-	private BundleType getBundleType(File f) {
-		if (f.isDirectory()) 
-			return BundleType.FOLDER;
-		else 
-			return BundleType.JAR;
-	}
-	
-
 }

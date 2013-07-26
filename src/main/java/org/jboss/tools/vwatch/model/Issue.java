@@ -1,44 +1,63 @@
 package org.jboss.tools.vwatch.model;
 
+import org.jboss.vwatch.util.BundleValidation;
+
 /**
- * Issue is storage for recording evaluating issue
+ * Abstract issue class
  * 
  * @author jpeterka
  * 
  */
-public class Issue {
+public abstract class Issue {
 
-	int severity = 0; // 0-3: note, caution, warning, error
-	String message;
-
-	public String getSeverityStr() {
-		if (severity == 0) {
-			return "Note";
-		} else if (severity == 1) {
-			return "Caution";
-		} else if (severity == 2) {
-			return "Warning";
-		} else if (severity == 3) {
-			return ("Error");
-		} else {
-			return ("Unknown");
-		}
+	// Data for revalidation
+	protected BundleValidation validation;
+	protected Bundle referenceBundle;
+	
+	protected Severity severity;
+	protected String description;
+	protected boolean sticky = false;
+	
+	public String getDescription() {
+		return description;
 	}
 
-	public String getMessage() {
-		return message;
+	public void setSeverity(Severity s) {
+		this.severity = s;
 	}
-
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
-	public void setSeverity(int severity) {
-		this.severity = severity;
-	}
-
-	public int getSeverity() {
+	
+	public Severity getSeverity() {
 		return severity;
 	}
 
+	public boolean isSticky() {
+		return sticky;
+	}
+
+	public BundleValidation getValidation() {
+		return validation;
+	}
+
+	public void setValidation(BundleValidation validation) {
+		this.validation = validation;
+	}
+
+	public Bundle getReferenceBundle() {
+		return referenceBundle;
+	}
+
+	public void setReferenceBundle(Bundle referenceBundle) {
+		this.referenceBundle = referenceBundle;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setSticky(boolean sticky) {
+		this.sticky = sticky;
+	}
+	
+	
+	
 }

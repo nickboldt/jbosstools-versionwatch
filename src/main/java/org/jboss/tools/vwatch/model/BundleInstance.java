@@ -10,7 +10,8 @@ public class BundleInstance {
 	Version version;
 	String postfix;
 	String md5;
-	BundleType bundleType;	
+	BundleType bundleType = new BundleType(BundleType.NONE);
+	
 	long size;
 	List<Issue> issues = new ArrayList<Issue>();
 
@@ -54,12 +55,12 @@ public class BundleInstance {
 		this.postfix = postfix;
 	}
 
-	public BundleType getBundleType() {
-		return bundleType;
+	public int getBundleType() {
+		return bundleType.type;
 	}
 
-	public void setBundleType(BundleType bundleType) {
-		this.bundleType = bundleType;
+	public void setBundleType(int bundleType) {
+		this.bundleType.type = bundleType;
 	}
 
 	public String toString() {
@@ -69,7 +70,7 @@ public class BundleInstance {
 	public String getErrorsAndWarnings() {
 		String ret = "";
 		for (Issue i : getIssues()) {
-			ret += i.getSeverityStr() + ":" + i.getMessage() + "&#10;";
+			ret += i.getSeverity().toString() + ":" + i.getDescription() + "&#10;";
 		}
 		return ret;
 	}
@@ -77,7 +78,7 @@ public class BundleInstance {
 	public int getMaxSeverity() {
 		int ret = 0;
 		for (Issue i : issues) {
-			ret = Math.max(ret, i.getSeverity());
+			ret = Math.max(ret, i.getSeverity().ordinal());
 		}
 		return ret;
 	}
@@ -105,6 +106,4 @@ public class BundleInstance {
 	public void setSize(long size) {
 		this.size = size;
 	}
-	
-	
 }

@@ -1,7 +1,9 @@
 package org.jboss.vwatch.util;
 
+import org.apache.log4j.Logger;
 import org.jboss.tools.vwatch.model.Bundle;
 import org.jboss.tools.vwatch.model.Issue;
+import org.jboss.tools.vwatch.service.EvaluationService;
 
 /**
  * Abstract class for specific validation rules
@@ -12,6 +14,8 @@ public abstract class BundleValidation {
 	
 	private int severity = 0;	
 	private String issueMessage;
+	public Logger log = Logger.getLogger(BundleValidation.class);
+	
 	
 	/**
 	 * Validates bundle1 with bundle2
@@ -20,18 +24,8 @@ public abstract class BundleValidation {
 	 */
 	public void validate(Bundle b1, Bundle b2) {
 		if (!isValid(b1,b2)) {
-			Issue i = new Issue();
-			i.setMessage(issueMessage);
-			i.setSeverity(severity);
-			b2.getIssues().add(i);
+			addIssue(b1,b2);
 		}		
-	}
-
-	public void skip(Bundle b2) {
-		Issue i = new Issue();
-		i.setMessage("Skipped: " + b2.getName());
-		i.setSeverity(severity);
-		b2.getIssues().add(i);
 	}
 	
 	/**
@@ -42,6 +36,13 @@ public abstract class BundleValidation {
 	 */
 	public abstract boolean isValid(Bundle b1, Bundle b2);
 
+	/**
+	 * Add issue
+	 * @param b2
+	 * @return
+	 */
+	public abstract void addIssue(Bundle b1, Bundle b2);
+	
 	public String getIssueMessage() {
 		return issueMessage;
 	}

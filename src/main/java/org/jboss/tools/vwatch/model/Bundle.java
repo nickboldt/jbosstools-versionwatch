@@ -13,48 +13,36 @@ import org.jboss.tools.vwatch.Settings;
  * 
  */
 public class Bundle {
-	String name;
+	
+	String name;	
 	List<BundleInstance> instances = new ArrayList<BundleInstance>();
-	List<String> versions = new ArrayList<String>();
-	//List<Issue> issues = new ArrayList<Issue>();
-
-	Logger log = Logger.getLogger(Bundle.class);
-
+	/**
+	 * Returns bundle issues
+	 * @return
+	 */
 	public List<Issue> getIssues() {
 		return instances.get(0).getIssues();
 	}
-
-/*
-	public void setIssues(List<Issue> issues) {
-		this.issues = issues;
-	}
-*/
 	
-	// only add unique version values to avoid duplicates
+	/**
+	 * Returns html format of bundle versions
+	 * @return
+	 */
 	public String getVersions() {
-		log.setLevel(Settings.getLogLevel());
-		String s = "";
-		for (int i = 0; i < getInstances().size(); i++) {
-			String thisVersion = getInstances().get(i).getVersion().toString();
-			if (!versions.contains(thisVersion)) 
-			{
-				versions.add(thisVersion);
-				s += getInstances().get(i).getVersion();
-				if (i < getInstances().size() - 2) {
-					s +="<br/>";
-				}
+		String versions = "";
+		for (int i = 0; i < getInstances().size(); i++) {		
+			versions += getInstances().get(i).getVersion();
+			if (i < getInstances().size() - 1) {
+				versions +="<br/>";
 			}
 		}
-		if (versions.size()>1) {
-			log.warn("Multiple versions of " + name + " found: " + s.replaceAll("<br/>", ", "));
-		}
-		return s;
+		return versions;
 	}
-
-	public void setVersions(List<String> versions) {
-		this.versions = versions;
-	}
-
+	
+	/**
+	 * Returns bundle name
+	 * @return
+	 */
 	public String getName() {
 		return name;
 	}
@@ -71,10 +59,8 @@ public class Bundle {
 		this.instances = instances;
 	}
 	
-	// only report on multiple instances if there are multiple instances AND versions
 	public boolean hasMultipleInstances() {
-		if (instances.size() > 1 && versions.size() > 1) return true;
-		return false;
+		return instances.size() > 1;
 	}
 
 	public Version getVersion() {
@@ -101,8 +87,8 @@ public class Bundle {
 	}
 	public String getErrorsAndWarnings() {
 		return (instances.get(0).getErrorsAndWarnings());
-	}
-
+	}	
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) return false;
@@ -113,5 +99,15 @@ public class Bundle {
 			}
 		}
 		return false;
-	}	
+	}
+
+
+	public BundleInstance getInstance(BundleInstance bi) {
+		for (BundleInstance i : instances) {
+			if (i.getFullName().equals(bi.getFullName())) {
+				return i;
+			}
+		}
+		return null;
+	}
 }

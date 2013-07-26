@@ -1,6 +1,5 @@
 package org.jboss.tools.vwatch.service;
 
-import java.util.List;
 import java.util.Set;
 
 import org.jboss.tools.vwatch.model.Bundle;
