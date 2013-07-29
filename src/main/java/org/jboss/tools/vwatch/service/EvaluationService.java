@@ -1,22 +1,21 @@
 package org.jboss.tools.vwatch.service;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.util.Zip4jConstants;
-
 import org.apache.log4j.Logger;
 import org.jboss.tools.vwatch.Settings;
+import org.jboss.tools.vwatch.issue.OkIssue;
 import org.jboss.tools.vwatch.model.Bundle;
 import org.jboss.tools.vwatch.model.Installation;
 import org.jboss.tools.vwatch.model.Issue;
-import org.jboss.tools.vwatch.validator.MD5Validation;
+import org.jboss.tools.vwatch.validator.BundleValidator;
+import org.jboss.tools.vwatch.validator.FolderAndJarValidator;
+import org.jboss.tools.vwatch.validator.MD5Validator;
+import org.jboss.tools.vwatch.validator.OkValidator;
+import org.jboss.tools.vwatch.validator.Validator;
 import org.jboss.tools.vwatch.validator.VersionDecreasedValidator;
-import org.jboss.vwatch.util.BundleValidator;
+import org.jboss.vwatch.util.PairValidator;
 
 /**
  * Evaluation Service
@@ -27,7 +26,8 @@ import org.jboss.vwatch.util.BundleValidator;
 public class EvaluationService {
 
 	Logger log = Logger.getLogger(EvaluationService.class);
-	List<BundleValidator> validators = new ArrayList<BundleValidator>();
+	List<PairValidator> pairValidators = new ArrayList<PairValidator>();
+	List<BundleValidator> bundleValidators = new ArrayList<BundleValidator>();
 
 	/**
 	 * Sorts installations according to versions
@@ -64,6 +64,19 @@ public class EvaluationService {
 		return sortedList;
 	}
 
+	public void prepareValidators() {
+
+		// prepare validator list		
+		pairValidators.add(new VersionDecreasedValidator());
+		pairValidators.add(new OkValidator());
+		
+		bundleValidators.add(new FolderAndJarValidator());
+		
+		if (Settings.isMd5checkEnabled()) {
+			pairValidators.add(new MD5Validator());
+		}
+	}
+	
 	/**
 	 * Finds conflicts in given installations
 	 * 
@@ -74,55 +87,30 @@ public class EvaluationService {
 
 		log.setLevel(Settings.getLogLevel());
 
+		// Single bundle evaluation
+		for (int i = 0; i < installations.size() ; i++) {
+			findBundleIssues(installations.get(i), true);	
+			findBundleIssues(installations.get(i), false);	
+		}
+		
+		// Pair issue evaluation
 		for (int i = 0; i < installations.size() - 1; i++) {
 			log.debug("Finding conflicts in installation: "
 					+ installations.get(i + 1).getRootFolderAbsolutePath());
 
 			// features
-			findConflictsBetweenTwo(installations.get(i),
-					installations.get(i + 1), filter, true);
-			
+			findPairIssues(installations.get(i),installations.get(i + 1), true);		
 			// plugins
-			findConflictsBetweenTwo(installations.get(i),
-					installations.get(i + 1), filter, false);
+			findPairIssues(installations.get(i),installations.get(i + 1), false);
 		}
 	}
 
-/*
-	private String getBundleMD5(Bundle b) {
-		File f = new File(b.getAbsolutePath());
-		File f2 = new File(b.getAbsolutePath() + ".jar");
-		if (f.isFile()) {
-			return MD5Service.getInstance().getMD5(f);
+	private void findBundleIssues(Installation installation, boolean feature) {
+		// find new issues
+		for (Bundle b : installation.getBundles(feature)) {
+			runBundleValidators(b);
 		}
-
-		if (f2.isFile()) {
-			return MD5Service.getInstance().getMD5(f2);
-		}
-
-		if (f.isDirectory()) {
-			ZipFile bundleJar = null;
-			try {
-				log.warn("Bundle " + b.getName()
-						+ " is a folder; must jar it to compare MD5 sums.");
-				bundleJar = new ZipFile(f2);
-				ZipParameters parameters = new ZipParameters();
-				parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
-				parameters
-						.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
-				bundleJar.createZipFileFromFolder(b.getAbsolutePath(),
-						parameters, true, 10485760);
-			} catch (ZipException e) {
-				e.printStackTrace();
-			}
-			if (bundleJar != null) {
-				return MD5Service.getInstance().getMD5(f2);
-			}
-		}
-		log.warn("Could not generate MD5 for " + b.getAbsolutePath());
-		return null;
 	}
-*/
 
 	/**
 	 * Finds conflicts between two installations TODO: Separate validation rules
@@ -134,18 +122,11 @@ public class EvaluationService {
 	 * @param feature
 	 *            boolean to set whether to use feature or plugin pack
 	 */
-	private void findConflictsBetweenTwo(final Installation i1,
-			final Installation i2, String filter, boolean feature) {
-
-		// prepare validator list		
-		validators.add(new VersionDecreasedValidator());
-		if (Settings.isMd5checkEnabled()) {
-			validators.add(new MD5Validation());
-		}
+	private void findPairIssues(final Installation i1,
+			final Installation i2, boolean feature) {
 
 		checkFixesForPreviousIssues(i1, i2, feature);
-
-		findVersionConflicts(i1, i2, feature);		
+		findNewPairIssues(i1, i2, feature);		
 	}
 
 	private void checkFixesForPreviousIssues(Installation i1, Installation i2,
@@ -171,32 +152,40 @@ public class EvaluationService {
 
 	}
 	
-	private void checkFixes(Bundle b1, Bundle b2) {
+	private void checkFixes(Bundle b1, Bundle b2) {		
 		for (Issue i : b1.getIssues()) {
-			BundleValidator validation = i.getValidation();
-			Bundle refBundle = i.getReferenceBundle();
-			if (!validation.isValid(refBundle, b2)) {
-				validation.addIssue(refBundle, b2);
+			if (i.isSticky()) {
+				Validator v = i.getValidation();
+				if (v instanceof PairValidator) {
+					PairValidator pv = (PairValidator)v;
+					Bundle refBundle = i.getReferenceBundle();
+					// issue not fixed
+					if (!pv.isValid(refBundle, b2)) {
+						pv.addIssue(refBundle, b2);
+					
+					} else {
+						//b2.getIssues().add(new OkIssue(b2));
+					}
+				}
 			}
 		}
 	}
 
-	private void findVersionConflicts(Installation i1, Installation i2,
+	private void findNewPairIssues(Installation i1, Installation i2,
 			boolean feature) {
 		BundleService bs = new BundleService();
-
 		log.setLevel(Settings.getLogLevel());
 
 		for (Bundle b2 : i2.getBundles(feature)) {
 			// only validate if the filter matches, which saves a ton of time
-			if (BundleValidator.isNullFilter(Settings.getFilter())
+			if (PairValidator.isNullFilter(Settings.getFilter())
 					|| b2.getName().matches(Settings.getFilter())) {
 				Bundle b1 = bs.getBundleFromList(i1.getBundles(feature),
 						b2.getName());
 				if (b1 != null) {
 					if (!b1.hasMultipleInstances()
 							&& !b2.hasMultipleInstances()) {
-						validate(b1, b2);
+						runPairValidators(b1, b2);
 					} else {
 						log.info("Multiple instances, not supported yet");
 					}
@@ -209,9 +198,16 @@ public class EvaluationService {
 
 	}
 	
-	private void validate(Bundle b1, Bundle b2) {
-		for (BundleValidator v : validators) {
+	private void runPairValidators(Bundle b1, Bundle b2) {
+		for (PairValidator v : pairValidators) {
 			v.validate(b1, b2);
 		}
 	}
+	
+	private void runBundleValidators(Bundle b) {
+		for (BundleValidator v : bundleValidators) {
+			v.validate(b);
+		}
+	}
+	
 }

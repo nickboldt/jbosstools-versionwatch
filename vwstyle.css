@@ -29,7 +29,7 @@ p {
 }
 
 tr.header {
-	background-color: rgba(0,255, 0,.5);
+	background-color: rgba(0,150,150,0.5);
 	color: rgb(0, 0, 0);	
 }
 
@@ -42,8 +42,8 @@ td.warning {
 	background-color: rgb(250,250 , 0);
 }
 
-td.caution {
-	background-color: rgb(250, 250,200 );
+td.info {
+	background-color: rgb(255, 255,255 );
 }
 
 td.none {
@@ -53,6 +53,10 @@ td.none {
 td.normal {
 	background-color: rgb(255, 255, 255);
 }
+td.ok {
+	background-color: rgb(0, 255, 0);
+}
+
 
 tr:hover  {
   background-color: rgba(0,150,150,.5);

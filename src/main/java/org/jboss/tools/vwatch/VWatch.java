@@ -130,6 +130,7 @@ public class VWatch {
 		EvaluationService es = new EvaluationService();
 		// this is no longer needed because we can just sort the installations with Arrays.sort, which is much faster
 		//installations = es.sortInstallations(installations);
+		es.prepareValidators();
 		es.findConflicts(installations, filter);
 	}
 
@@ -137,8 +138,8 @@ public class VWatch {
 	 * Create final report
 	 */
 	private void createReport() {
-		ReportService rs = new ReportService();
-		rs.generateReport(installations, filter);
+		ReportService rs = ReportService.getInstance();
+		rs.generateReport(installations);
 	}
 
 	public boolean isMd5checkEnabled() {

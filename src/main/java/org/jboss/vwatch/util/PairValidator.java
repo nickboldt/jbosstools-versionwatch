@@ -2,19 +2,18 @@ package org.jboss.vwatch.util;
 
 import org.apache.log4j.Logger;
 import org.jboss.tools.vwatch.model.Bundle;
-import org.jboss.tools.vwatch.model.Issue;
-import org.jboss.tools.vwatch.service.EvaluationService;
+import org.jboss.tools.vwatch.validator.Validator;
 
 /**
  * Abstract class for specific validation rules
  * @author jpeterka
  *
  */
-public abstract class BundleValidator {
+public abstract class PairValidator extends Validator {
 	
 	private int severity = 0;	
 	private String issueMessage;
-	public Logger log = Logger.getLogger(BundleValidator.class);
+	public Logger log = Logger.getLogger(PairValidator.class);
 	
 	
 	/**

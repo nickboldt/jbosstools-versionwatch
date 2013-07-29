@@ -1,7 +1,11 @@
 package org.jboss.tools.vwatch.model;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.jboss.tools.vwatch.service.FileService;
+import org.jboss.tools.vwatch.service.MD5Service;
 
 public class BundleInstance {
 	String absolutePath;
@@ -9,7 +13,7 @@ public class BundleInstance {
 	Bundle bundle;
 	Version version;
 	String postfix;
-	String md5;
+	String md5 = "";
 	BundleType bundleType = new BundleType(BundleType.NONE);
 	
 	long size;
@@ -69,6 +73,7 @@ public class BundleInstance {
 
 	public String getErrorsAndWarnings() {
 		String ret = "";
+		
 		for (Issue i : getIssues()) {
 			ret += i.getSeverity().toString() + ":" + i.getDescription() + "&#10;";
 		}
@@ -84,6 +89,20 @@ public class BundleInstance {
 	}
 
 	public String getMd5() {
+		if (md5.equals("")) {
+			if (bundleType.isJar()) {
+				File f = new File(getAbsolutePath()+ ".jar");
+				md5 = MD5Service.getInstance().getMD5(f);	
+			}
+			else if ((bundleType.isDir()))
+			{				
+				File f = null;
+				f = new File(getAbsolutePath()+ ".zip");
+				FileService.getInstance().zipFolder(new File(getAbsolutePath()), f);				
+				md5 = MD5Service.getInstance().getMD5(new File(getAbsolutePath() + ".zip"));
+				f.delete();
+			}
+		}		
 		return md5;
 	}
 

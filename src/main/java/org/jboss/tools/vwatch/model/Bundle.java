@@ -3,9 +3,6 @@ package org.jboss.tools.vwatch.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.jboss.tools.vwatch.Settings;
-
 /**
  * Bundle class, used for storing bundle related data
  * 
@@ -16,6 +13,7 @@ public class Bundle {
 	
 	String name;	
 	List<BundleInstance> instances = new ArrayList<BundleInstance>();
+
 	/**
 	 * Returns bundle issues
 	 * @return

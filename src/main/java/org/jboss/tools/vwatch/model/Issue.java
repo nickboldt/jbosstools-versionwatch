@@ -1,6 +1,7 @@
 package org.jboss.tools.vwatch.model;
 
-import org.jboss.vwatch.util.BundleValidator;
+import org.jboss.tools.vwatch.validator.Validator;
+import org.jboss.vwatch.util.PairValidator;
 
 /**
  * Abstract issue class
@@ -11,7 +12,7 @@ import org.jboss.vwatch.util.BundleValidator;
 public abstract class Issue {
 
 	// Data for revalidation
-	protected BundleValidator validation;
+	protected Validator validation;
 	protected Bundle referenceBundle;
 	
 	protected Severity severity;
@@ -34,11 +35,11 @@ public abstract class Issue {
 		return sticky;
 	}
 
-	public BundleValidator getValidation() {
+	public Validator getValidation() {
 		return validation;
 	}
 
-	public void setValidation(BundleValidator validation) {
+	public void setValidation(PairValidator validation) {
 		this.validation = validation;
 	}
 

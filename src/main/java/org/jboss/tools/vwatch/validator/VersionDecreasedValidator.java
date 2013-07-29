@@ -4,9 +4,9 @@ import org.jboss.tools.vwatch.issue.VersionDecreasedIssue;
 import org.jboss.tools.vwatch.model.Bundle;
 import org.jboss.tools.vwatch.model.Issue;
 import org.jboss.tools.vwatch.service.VersionService;
-import org.jboss.vwatch.util.BundleValidator;
+import org.jboss.vwatch.util.PairValidator;
 
-public class VersionDecreasedValidator extends BundleValidator {
+public class VersionDecreasedValidator extends PairValidator {
 	final VersionService vs = new VersionService();
 
 	@Override
@@ -22,10 +22,11 @@ public class VersionDecreasedValidator extends BundleValidator {
 
 	@Override
 	public void addIssue(Bundle b1, Bundle b2) {
-		Issue i = new VersionDecreasedIssue(b1);
-		if (b1 == null) {
-			System.out.println("null");
+		if (b2.getIssues().size() > 5) {
+			System.out.println("uff");
 		}
+		
+		Issue i = new VersionDecreasedIssue(b1);
 		b2.getIssues().add(i);
 	}
 }

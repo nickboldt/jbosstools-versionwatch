@@ -14,7 +14,7 @@ public class BundleType {
 	}
 
 	public boolean isDir() {
-		return (type & JAR) == JAR;
+		return (type & DIR) == DIR;
 	}
 
 	public boolean isBoth() {

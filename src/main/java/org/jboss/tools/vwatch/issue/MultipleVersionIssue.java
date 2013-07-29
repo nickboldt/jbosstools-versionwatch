@@ -4,7 +4,7 @@ import org.jboss.tools.vwatch.model.Bundle;
 import org.jboss.tools.vwatch.model.Issue;
 import org.jboss.tools.vwatch.model.Severity;
 import org.jboss.tools.vwatch.validator.MultipleVersionValidator;
-import org.jboss.vwatch.util.BundleValidator;
+import org.jboss.vwatch.util.PairValidator;
 
 public class MultipleVersionIssue extends Issue {
 	

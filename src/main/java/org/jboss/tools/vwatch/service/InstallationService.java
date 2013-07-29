@@ -88,26 +88,41 @@ public class InstallationService {
 		// create bundle instance
 		BundleInstance bi = new BundleInstance();
 		bi.setVersion(v);
-		bi.setAbsolutePath(installation.getAbsoluteBundleDir(feature) + File.separator + record);
+		
+		String absolute = installation.getAbsoluteBundleDir(feature) + File.separator + record;
 		
 		// get bundle type
 		int bundleType = BundleType.NONE;
-		if (new File(bi.getAbsolutePath()).isFile()) {
-			bundleType = BundleType.JAR;
-		} else {
-			bundleType = BundleType.DIR;	
+		File f = new File(absolute);
+		if (!f.exists())  {
+			log.error("file doesn't exist");
+			throw new RuntimeException();
+		} 
+		if (f.getAbsolutePath().endsWith(".zip")) {
+			f.delete();
+			return null;
 		}
-		
+				
+		if (f.isDirectory()) {
+			bundleType = BundleType.DIR;
+		}
+		else
+		{
+			bundleType = BundleType.JAR;
+		}
+
 		// Set full name (remove jar extension if any);
 		if (bundleType == BundleType.JAR) {
 			String fullName = record;
 			String withoutJar = fullName.substring(0, fullName.length() - 4);
 			bi.setFullName(withoutJar);
-		}
+		}		
 		else {
 			bi.setFullName(record);
 		}
-	
+		
+		bi.setAbsolutePath(installation.getAbsoluteBundleDir(feature) + File.separator + bi.getFullName());
+		
 		// parse bundle name
 		Pattern p2 = Pattern.compile("^.*?(?=_\\d+\\.\\d+\\.\\d+)");
 		Matcher m2 = p2.matcher(record);
@@ -141,9 +156,6 @@ public class InstallationService {
 
 		log.setLevel(Settings.getLogLevel());
 		log.debug(b.toString());
-		
-		// Add bundle instance type
-		File f = new File(installation.getAbsoluteBundleDir(feature) + File.separator + record);
 		
 		bi.setBundleType(bi.getBundleType() | bundleType);
 		b.getInstances().add(bi);
