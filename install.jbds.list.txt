@@ -1,3 +1,4 @@
+/qa/services/http/binaries/RHDS/builds/stable/7.0.0.GA.installer/jbdevstudio-product-universal-7.0.0.GA-v20130720-0044-B364.jar,
 /qa/services/http/binaries/RHDS/builds/stable/6.0.1.GA.installer/jbdevstudio-product-universal-6.0.1.GA-v20130327-2052-B361.jar,
 /qa/services/http/binaries/RHDS/builds/stable/6.0.0.GA.installer/jbdevstudio-product-universal-6.0.0.GA-v20121206-1855-B186.jar,
 /qa/services/http/binaries/RHDS/builds/stable/5.0.2.GA.installer/jbdevstudio-product-universal-5.0.2.v20130119-0035-H249-GA.jar,
