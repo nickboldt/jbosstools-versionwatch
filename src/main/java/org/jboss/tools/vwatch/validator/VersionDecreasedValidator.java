@@ -4,7 +4,6 @@ import org.jboss.tools.vwatch.issue.VersionDecreasedIssue;
 import org.jboss.tools.vwatch.model.Bundle;
 import org.jboss.tools.vwatch.model.Issue;
 import org.jboss.tools.vwatch.service.VersionService;
-import org.jboss.vwatch.util.PairValidator;
 
 public class VersionDecreasedValidator extends PairValidator {
 	final VersionService vs = new VersionService();

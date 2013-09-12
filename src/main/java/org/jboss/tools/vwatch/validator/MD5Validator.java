@@ -10,7 +10,6 @@ import org.jboss.tools.vwatch.model.BundleType;
 import org.jboss.tools.vwatch.model.Issue;
 import org.jboss.tools.vwatch.service.FileService;
 import org.jboss.tools.vwatch.service.MD5Service;
-import org.jboss.vwatch.util.PairValidator;
 
 public class MD5Validator extends PairValidator {
 	

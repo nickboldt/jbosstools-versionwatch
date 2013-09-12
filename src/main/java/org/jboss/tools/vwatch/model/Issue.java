@@ -1,7 +1,7 @@
 package org.jboss.tools.vwatch.model;
 
+import org.jboss.tools.vwatch.validator.PairValidator;
 import org.jboss.tools.vwatch.validator.Validator;
-import org.jboss.vwatch.util.PairValidator;
 
 /**
  * Abstract issue class

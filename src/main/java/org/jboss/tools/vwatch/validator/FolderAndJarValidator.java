@@ -6,6 +6,11 @@ import org.jboss.tools.vwatch.model.BundleInstance;
 import org.jboss.tools.vwatch.model.BundleType;
 import org.jboss.tools.vwatch.service.VersionService;
 
+/**
+ * Validator checks if there is just either folder or jar for given bundle, not both
+ * @author jpeterka
+ *
+ */
 public class FolderAndJarValidator extends BundleValidator {
 	final VersionService vs = new VersionService();	
 

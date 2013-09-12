@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.jboss.tools.vwatch.Settings;
 import org.jboss.tools.vwatch.model.Installation;
 import org.jboss.tools.vwatch.report.BundleVersionReport;
 import org.jboss.tools.vwatch.report.ProductReport;
@@ -45,10 +46,19 @@ public class ReportService {
 	public void generateReport(List<Installation> installations) {
 		// add reports
 		reports.add(new BundleVersionReport(installations));
-		reports.add(new ProductReport());
+		reports.add(new ProductReport(findInstallation(installations, Settings.getProduct())));
 
 		for (Report r : reports) {
 			r.generateReport();
 		}
+	}
+
+	private Installation findInstallation(List<Installation> installations, String product) {
+		for (Installation i : installations) {
+			if (i.getRootFolderName().equals(product)) {
+				return i;
+			}			
+		}		
+		return installations.get(installations.size() - 1);
 	}
 }

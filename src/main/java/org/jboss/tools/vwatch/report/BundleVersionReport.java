@@ -18,10 +18,10 @@ import org.jboss.tools.vwatch.Settings;
 import org.jboss.tools.vwatch.model.Bundle;
 import org.jboss.tools.vwatch.model.Installation;
 import org.jboss.tools.vwatch.model.Issue;
-import org.jboss.vwatch.util.PairValidator;
 import org.jboss.tools.vwatch.model.Severity;
 import org.jboss.tools.vwatch.service.BundleService;
 import org.jboss.tools.vwatch.service.StopWatch;
+import org.jboss.tools.vwatch.validator.PairValidator;
 
 /**
  * Service providing final report generating from given installations
@@ -183,10 +183,12 @@ public class BundleVersionReport extends Report {
 						c = " class=\"ok\" ";
 					else if (max == 1)
 						c = " class=\"info\" ";
-					else if (max == 2)
-						c = " class=\"warning\" ";
 					else if (max == 3)
+						c = " class=\"warning\" ";
+					else if (max == 4)
 						c = " class=\"error\" ";
+					else if (max == 2) 
+						c = " class=\"ignored\" ";
 
 					if (bundleFromList.getIssues().size() > 0) {
 						tooltip += bundleFromList.getErrorsAndWarnings();
@@ -236,6 +238,18 @@ public class BundleVersionReport extends Report {
 
 	public List<Installation> getInstallations() {
 		return installations;
+	}
+
+	@Override
+	protected void generateBody() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	protected String getFileName() {
+		return "output.html";
 	}
 
 	

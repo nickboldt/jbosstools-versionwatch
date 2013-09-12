@@ -13,11 +13,12 @@ public class Settings {
 	// Properties that can be used with Version Watch (-Dproperty)
 	public static final String md5checkVMProperty = "vwatch.md5check"; 
 	public static final String filterVMProperty = "vwatch.filter";
+	public static final String productVMProperty= "vwatch.product";
 	// Default values
 	private static boolean md5checkEnabled = false;	
 	private static String filter = null;
-	
-	
+	private static String product = "";
+		
 	public static void setLogLevel(Level level) {
 		Settings.loglevel = level;
 	}
@@ -38,4 +39,11 @@ public class Settings {
 	public static String getFilter() {
 		return filter;
 	}
+	public static void setProduct(String product) {
+		Settings.product = product;
+	}
+	public static String getProduct() {
+		return product;
+	}
+
 }

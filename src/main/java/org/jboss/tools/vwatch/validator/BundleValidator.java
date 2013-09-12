@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import org.jboss.tools.vwatch.model.Bundle;
 
 /**
- * Single bundle validator
+ * Single bundle validator able validate without other installations
  * @author jpeterka
  *
  */

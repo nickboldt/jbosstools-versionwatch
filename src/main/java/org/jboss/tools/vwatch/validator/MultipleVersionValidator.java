@@ -4,6 +4,11 @@ import org.jboss.tools.vwatch.issue.MultipleVersionIssue;
 import org.jboss.tools.vwatch.model.Bundle;
 import org.jboss.tools.vwatch.model.Issue;
 
+/**
+ * Multiple version validator checks if there are multiple version for given bundle
+ * @author jpeterka
+ *
+ */
 public class MultipleVersionValidator extends BundleValidator {
 
 	@Override

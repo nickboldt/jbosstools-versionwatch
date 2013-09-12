@@ -1,8 +1,12 @@
 package org.jboss.tools.vwatch.validator;
 
 import org.jboss.tools.vwatch.model.Bundle;
-import org.jboss.vwatch.util.PairValidator;
 
+/**
+ * Dummy validator, always return true 
+ * @author jpeterka
+ *
+ */
 public class OkValidator extends PairValidator {
 	
 

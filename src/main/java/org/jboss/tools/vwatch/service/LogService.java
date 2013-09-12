@@ -8,14 +8,14 @@ import org.apache.log4j.Logger;
  *
  */
 public class LogService {
-
-	Logger log = Logger.getLogger(LogService.class);
+ 
+	private static Logger log = Logger.getLogger(LogService.class);
 	
 	/**
 	 * Logs the error and exits the application after some fatal error
 	 * @param message error message string
 	 */
-	public void logAndExit(String message) {
+	public static void logAndExit(String message) {
 		log.error(message);
 		System.exit(-1);
 	}

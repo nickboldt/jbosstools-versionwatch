@@ -13,9 +13,9 @@ import org.jboss.tools.vwatch.validator.BundleValidator;
 import org.jboss.tools.vwatch.validator.FolderAndJarValidator;
 import org.jboss.tools.vwatch.validator.MD5Validator;
 import org.jboss.tools.vwatch.validator.OkValidator;
+import org.jboss.tools.vwatch.validator.PairValidator;
 import org.jboss.tools.vwatch.validator.Validator;
 import org.jboss.tools.vwatch.validator.VersionDecreasedValidator;
-import org.jboss.vwatch.util.PairValidator;
 
 /**
  * Evaluation Service

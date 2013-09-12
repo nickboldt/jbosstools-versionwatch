@@ -101,6 +101,11 @@ public class VWatch {
 		if (md5check != null) {
 			Settings.setMd5checkEnabled(true);
 		}
+		String product = System.getProperty(Settings.productVMProperty);
+		if (product != null) {
+			Settings.setProduct(product);
+		}
+
 	}
 
 	/**

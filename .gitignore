@@ -1,2 +1,4 @@
 output*.html
 target/
+/default.html
+/product.html

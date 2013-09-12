@@ -1,8 +1,7 @@
-package org.jboss.vwatch.util;
+package org.jboss.tools.vwatch.validator;
 
 import org.apache.log4j.Logger;
 import org.jboss.tools.vwatch.model.Bundle;
-import org.jboss.tools.vwatch.validator.Validator;
 
 /**
  * Abstract class for specific validation rules
