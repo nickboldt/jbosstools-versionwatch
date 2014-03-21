@@ -90,26 +90,33 @@ TMPDIR=/tmp
 installJBDS() {
   version=${1}
   jar=${2}
+
+  # up to JBDS 8.0.0.Alpha1, use old namespace
+  if [[ ${version:0:1} -le 7 ]] || [[ ${version:0:12} == "8.0.0.Alpha1" ]]; then 
+    namespace=com.jboss.jbds.installer
+  else
+    namespace=com.jboss.devstudio.core.installer
+  fi
   echo "<?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <AutomatedInstallation langpack='eng'>
-<com.jboss.jbds.installer.HTMLInfoPanelWithRootWarning id='introduction'/>
+<${namespace}.HTMLInfoPanelWithRootWarning id='introduction'/>
 <com.izforge.izpack.panels.HTMLLicencePanel id='licence'/>
-<com.jboss.jbds.installer.PathInputPanel id='target'>
+<${namespace}.PathInputPanel id='target'>
 <installpath>${INSTALL_FOLDER}/jbds-${version}</installpath>
-</com.jboss.jbds.installer.PathInputPanel>
-<com.jboss.jbds.installer.JREPathPanel id='jre'/>
-<com.jboss.jbds.installer.JBossAsSelectPanel id='as'>
+</${namespace}.PathInputPanel>
+<${namespace}.JREPathPanel id='jre'/>
+<${namespace}.JBossAsSelectPanel id='as'>
 <installgroup>jbds</installgroup>
-</com.jboss.jbds.installer.JBossAsSelectPanel>
-<com.jboss.jbds.installer.UpdatePacksPanel id='updatepacks'/>
-<com.jboss.jbds.installer.DiskSpaceCheckPanel id='diskspacecheck'/>
+</${namespace}.JBossAsSelectPanel>
+<${namespace}.UpdatePacksPanel id='updatepacks'/>
+<${namespace}.DiskSpaceCheckPanel id='diskspacecheck'/>
 <com.izforge.izpack.panels.SummaryPanel id='summary'/>
 <com.izforge.izpack.panels.InstallPanel id='install'/>
-<com.jboss.jbds.installer.CreateLinkPanel id='createlink'>
+<${namespace}.CreateLinkPanel id='createlink'>
 <jrelocation>$(which java)</jrelocation>
-</com.jboss.jbds.installer.CreateLinkPanel>
+</${namespace}.CreateLinkPanel>
 <com.izforge.izpack.panels.ShortcutPanel id='shortcut'/>
-<com.jboss.jbds.installer.ShortcutPanelPatch id='shortcutpatch'/>
+<${namespace}.ShortcutPanelPatch id='shortcutpatch'/>
 <com.izforge.izpack.panels.SimpleFinishPanel id='finish'/>
 </AutomatedInstallation>" > ${INSTALL_FOLDER}/jbds-${version}.install.xml
   if [[ ! -f ${jar} ]] && [[ ${BASE_URL} ]]; then
