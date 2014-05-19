@@ -1,14 +1,10 @@
 package org.jboss.tools.vwatch.validator;
 
-import java.io.File;
-
 import org.apache.log4j.Logger;
 import org.jboss.tools.vwatch.issue.MD5Issue;
 import org.jboss.tools.vwatch.model.Bundle;
 import org.jboss.tools.vwatch.model.BundleInstance;
-import org.jboss.tools.vwatch.model.BundleType;
 import org.jboss.tools.vwatch.model.Issue;
-import org.jboss.tools.vwatch.service.FileService;
 import org.jboss.tools.vwatch.service.MD5Service;
 
 public class MD5Validator extends PairValidator {
@@ -19,7 +15,7 @@ public class MD5Validator extends PairValidator {
 	@Override
 	public boolean isValid(Bundle b1, Bundle b2) {
 		for (BundleInstance i1 : b1.getInstances()) {
-			BundleInstance matching = b1.getInstance(i1);
+			BundleInstance matching = b2.getInstance(i1);
 			if (matching != null) { 
 					
 				if (!i1.getMd5().equals(matching.getMd5())) {
@@ -32,7 +28,7 @@ public class MD5Validator extends PairValidator {
 				}
 			}
 			else {	
-				log.info("unable to validate md5 for " + matching.getFullName());
+				log.debug("No corresponding bundle to check md5 with " + i1.getFullName());
 				return true;
 			}
 		}
