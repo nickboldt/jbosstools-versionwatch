@@ -97,8 +97,9 @@ public class InstallationService {
 		if (!f.exists())  {
 			log.error("file doesn't exist");
 			throw new RuntimeException();
-		} 
-		if (f.getAbsolutePath().endsWith(".zip")) {
+		}
+
+		if (f.getAbsolutePath().toLowerCase().endsWith(".zip")) {
 			f.delete();
 			return null;
 		}
@@ -106,7 +107,7 @@ public class InstallationService {
 		if (f.isDirectory()) {
 			bundleType = BundleType.DIR;
 		}
-		else
+		else if (f.getName().toLowerCase().endsWith(".jar"))
 		{
 			bundleType = BundleType.JAR;
 		}

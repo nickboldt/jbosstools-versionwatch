@@ -40,7 +40,7 @@ public class FileService {
 			parameters
 					.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
 			bundleJar.createZipFileFromFolder(sourceFolder,
-					parameters, true, 10485760);
+					parameters, false, 10485760);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
