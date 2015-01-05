@@ -129,15 +129,28 @@ installJBDS() {
   ${JAVA} -jar ${jar} ${INSTALL_FOLDER}/jbds-${version}.install.xml
 }
 
+# install the latest nightly, caching the last version used in jbds-8.0.2.GA/version.txt so we only ever have one nightly at a time
+# new query method for JBDS 8/9, eg., for jboss-devstudio-8.0.0.GA-v20141020-1042-B317-installer-standalone.jar
+for i in `find ${JBDS_INSTALLER_NIGHTLY_FOLDER} -name "jboss-devstudio-*-installer-standalone.jar"`; do
+  ver=${i##*-devstudio-}; ver=${ver%%-installer-standalone.jar}; # 8.0.0.GA-v20141020-1042-B317
+  f=${i##*-devstudio-}; f=${f%%-*}; # 8.0.0.GA
+  LATEST=${INSTALL_FOLDER}/jbds-${f}/version.txt
+  if [[ -d ${INSTALL_FOLDER}/jbds-${f} ]] && [[ -f ${LATEST} ]] && [[ `cat ${LATEST}` == $ver ]]; then 
+    echo "Existing JBDS install in ${INSTALL_FOLDER}/jbds-${f} (${ver})"
+  else
+    # wipe existing installation
+    if [[ ${f} ]] && [[ -d ${INSTALL_FOLDER}/jbds-${f} ]]; then rm -fr ${INSTALL_FOLDER}/jbds-${f}; fi
+    # echo "Install JBDS ${f} (${ver}) to ${INSTALL_FOLDER}/jbds-${f} ..."
+    installJBDS ${f} ${i}
+    echo "${ver}" > ${LATEST}
+  fi
+done
+
 # install the latest nightly, caching the last version used in jbds-7.0.0.CR1/version.txt so we only ever have one nightly at a time
-# old path (  to JBDS 8.0.0.Beta1):     7.1.1.GA.installer/jbdevstudio-product-universal-7.1.1.GA-v20140314-2145-B688.jar 
-# new path (from JBDS 8.0.0.Beta2): 8.0.0.Beta2-build-core/jboss-devstudio-8.0.0.Beta2-v20140525-2146-B104-installer-standalone.jar 
-for i in `find ${JBDS_INSTALLER_NIGHTLY_FOLDER} -name "jbdevstudio-product-universal-*.jar" -o -name "jboss-devstudio-*-installer-standalone.jar`; do
-  ver=${i##*-universal-}
-  ver=${ver##*jboss-devstudio-}
-  ver=${ver%%-installer-standalone.jar}
-  ver=${ver%%.jar} # 7.0.0.Beta2-v20130626-0242-B345
-  f=${ver%%-*}; # 7.0.0.Beta2
+# old query method for JBDS 5/6/7, eg., jbdevstudio-product-universal-7.1.0.GA-v20131208-0703-B592.jar
+for i in `find ${JBDS_INSTALLER_NIGHTLY_FOLDER} -name "jbdevstudio-product-universal-*.jar"`; do
+  ver=${i##*-universal-}; ver=${ver%%.jar}; # 7.0.0.Beta2-v20130626-0242-B345
+  f=${i##*-universal-}; f=${f%%-*}; # 7.0.0.Beta2
   LATEST=${INSTALL_FOLDER}/jbds-${f}/version.txt
   if [[ -d ${INSTALL_FOLDER}/jbds-${f} ]] && [[ -f ${LATEST} ]] && [[ `cat ${LATEST}` == $ver ]]; then 
     echo "Existing JBDS install in ${INSTALL_FOLDER}/jbds-${f} (${ver})"
@@ -151,16 +164,11 @@ for i in `find ${JBDS_INSTALLER_NIGHTLY_FOLDER} -name "jbdevstudio-product-unive
 done
 
 # install stable releases + development milestones (baselines for comparison)
-# old path (  to JBDS 8.0.0.Beta1):     7.1.1.GA.installer/jbdevstudio-product-universal-7.1.1.GA-v20140314-2145-B688.jar 
-# new path (from JBDS 8.0.0.Beta2): 8.0.0.Beta2-build-core/jboss-devstudio-8.0.0.Beta2-v20140525-2146-B104-installer-standalone.jar 
 for i in ${INSTALLER_LIST}; do
   # if target folder does not exist, run the installer
-  ver=${i##*jbdevstudio-product-linux-gtk-}
-  ver=${ver##*-universal-}
-  ver=${ver##*jboss-devstudio-}
-  ver=${ver%%-installer-standalone.jar}
-  ver=${ver%%.jar*}; # 7.0.0.Beta2-v20130626-0242-B345
-  # f=${i##*-universal-}; f=${f%%-*}; # 7.0.0.Beta2
+  # 8.0.0.GA-v20141020-1042-B317
+  # support old file formats (4, 5/6/7, and 8/9
+  ver=${i##*jbdevstudio-product-linux-gtk-}; ver=${ver##*-universal-}; ver=${ver##*-devstudio-}; ver=${ver%%.jar*}; ver=${ver%%-installer-standalone};  
   if [[ -d ${INSTALL_FOLDER}/jbds-${ver} ]]; then 
     echo "Existing JBDS install in ${INSTALL_FOLDER}/jbds-${ver}"
   else
