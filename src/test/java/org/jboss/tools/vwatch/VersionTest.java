@@ -15,7 +15,7 @@ public class VersionTest {
 			VWatch.run();
 		}
 		catch (Exception e) {
-			fail("Exception" + e.getMessage());
+			fail("Exception: " + e.getMessage());
 		}
 	}
 

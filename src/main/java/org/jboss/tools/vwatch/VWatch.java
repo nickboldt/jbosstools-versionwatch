@@ -105,6 +105,15 @@ public class VWatch {
 		if (product != null) {
 			Settings.setProduct(product);
 		}
+		
+		String includeVersions = System.getProperty(Settings.includeVersionsProperty);
+		if (includeVersions != null) {
+			Settings.setIncludeVersions(includeVersions);
+		}
+		String excludeVersions = System.getProperty(Settings.excludeVersionsProperty);
+		if (excludeVersions != null) {
+			Settings.setExcludeVersions(excludeVersions);
+		}
 
 	}
 

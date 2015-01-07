@@ -10,7 +10,7 @@ import org.jboss.tools.vwatch.model.Installation;
 import org.jboss.tools.vwatch.model.Version;
 
 /**
- * Bundle version service contating usefull methods for version evaluation
+ * Bundle version service containing useful methods for version evaluation
  * @author jpeterka
  *
  */
@@ -35,33 +35,33 @@ public class VersionService {
 		if (text.matches("jbds-\\d+\\.\\d+\\.\\d+.*")) {
 
 			// Find version
-			Pattern regex = Pattern.compile("\\d+\\.\\d+\\.\\d+");
+			Pattern regex = Pattern.compile(Settings.getIncludeVersions().toString());
 			Matcher regexMatcher = regex.matcher(text);
-			regexMatcher.find();
-			String group = regexMatcher.group();
+			if (regexMatcher.find()) {
+				String group = regexMatcher.group();
+	
+				String[] split = group.split("\\.");
+				try {
+					version.setMajor(Integer.parseInt(split[0]));
+					version.setMinor(Integer.parseInt(split[1]));
+					version.setBuild(Integer.parseInt(split[2]));
+				} catch (NumberFormatException e) {
+					log.error("Cannot convert versions to numbers - " + e.getMessage());
+					return isValid;
+				}
+		
+				// seems valid
+				isValid = true;
 
-			String[] split = group.split("\\.");
-			try {
-				version.setMajor(Integer.parseInt(split[0]));
-				version.setMinor(Integer.parseInt(split[1]));
-				version.setBuild(Integer.parseInt(split[2]));
-			} catch (NumberFormatException e) {
-				log.error("Cannot convert versions to numbers" + e.getMessage());
-				return isValid;
+				if (Settings.getExcludeVersions().toString() != null && !Settings.getExcludeVersions().toString().equals("")) {
+					// ensure the string does NOT match the exclude pattern
+					regex = Pattern.compile(Settings.getExcludeVersions().toString());
+					regexMatcher = regex.matcher(text);
+					if (regexMatcher.find()) {
+						isValid = false;
+					}
+				} 
 			}
-
-			String[] split2 = text.split("-");
-			String prefix = split2[0];
-
-			String postfix = "";
-			if (split2.length > 2) {
-				postfix = split2[2];
-			}
-
-			// seems valid
-			isValid = true;
-			log.info("Version is valid " + prefix + version.toString()
-					+ postfix);
 
 		} else {
 			String message = "Incorrect version format";
@@ -103,7 +103,7 @@ public class VersionService {
 	}
 
 	/**
-	 * Parse Version from installation forlder name
+	 * Parse Version from installation folder name
 	 * @param i given installations
 	 * @return returns version instance
 	 */
@@ -133,7 +133,7 @@ public class VersionService {
 	}
 
 	/**
-	 * Returns true when versions diff si in major version number
+	 * Returns true when versions diff is in major version number
 	 * 
 	 * @return
 	 */
@@ -142,7 +142,7 @@ public class VersionService {
 	}
 
 	/**
-	 * Returns true when versions diff si in minor version number
+	 * Returns true when versions diff is in minor version number
 	 * 
 	 * @return
 	 */
@@ -151,7 +151,7 @@ public class VersionService {
 	}
 	
 	/**
-	 * Returns true when versions diff si in minor version number
+	 * Returns true when versions diff is in minor version number
 	 * 
 	 * @return
 	 */
@@ -160,7 +160,7 @@ public class VersionService {
 	}
 	
 	/**
-	 * Validates wheather v2 major version is greater
+	 * Validates whether v2 major version is greater
 	 * @param v1
 	 * @param v2
 	 * @return
@@ -170,7 +170,7 @@ public class VersionService {
 	}
 
 	/**
-	 * Validates wheather v2 minor version is greater
+	 * Validates whether v2 minor version is greater
 	 * @param v1
 	 * @param v2
 	 * @return
@@ -180,7 +180,7 @@ public class VersionService {
 	}
 
 	/**
-	 * Validates wheather v2 build version is greater 
+	 * Validates whether v2 build version is greater
 	 * @param v1
 	 * @param v2
 	 * @return
@@ -207,8 +207,5 @@ public class VersionService {
 	 */
 	public boolean isVersionEqual(Version v1, Version v2) {
 		return v2.toNumber() == v1.toNumber();
-	}
-	
-	
-	
+	}	
 }

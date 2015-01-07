@@ -35,6 +35,10 @@ DESCRIPTION=""
 # file from which to pull a list of JBDS installers to install
 JBDS_INSTALLERS_LISTFILE=${FROM}/install.jbds.list.txt
 
+# include and exclude patterns for which JBDS installs to use when producing the version diff report
+INCLUDE_VERSIONS="\d+\.\d+\.\d+"
+EXCLUDE_VERSIONS=""
+
 # read commandline args
 while [[ "$#" -gt 0 ]]; do
   case $1 in
@@ -46,6 +50,8 @@ while [[ "$#" -gt 0 ]]; do
     '-JBDS_INSTALLER_NIGHTLY_FOLDER') JBDS_INSTALLER_NIGHTLY_FOLDER="$2"; shift 1;;
     '-JBDS_INSTALLERS_LISTFILE') JBDS_INSTALLERS_LISTFILE="$2"; shift 1;;
     '-FILTER') FILTER="$2"; shift 1;;
+    '-INCLUDE_VERSIONS') INCLUDE_VERSIONS="$2"; shift 1;;
+    '-EXCLUDE_VERSIONS') EXCLUDE_VERSIONS="$2"; shift 1;;
     *) others="$others,$1"; shift 0;;
   esac
   shift 1
@@ -109,8 +115,10 @@ popd
 
 # generate reports and publish them
 pushd ${WORKSPACE}
-${MVN} -f ${FROM}/pom.xml clean test -Dmaven.repo.local=${WORKSPACE}/.repository -DinstallationsDir="${INSTALL_FOLDER}" -Dfilter="${FILTER}" && publish filtered && check_results filtered
-${MVN} -f ${FROM}/pom.xml clean test -Dmaven.repo.local=${WORKSPACE}/.repository -DinstallationsDir="${INSTALL_FOLDER}" -Dfilter=".*" && publish all && check_results all
+${MVN} -f ${FROM}/pom.xml clean test -Dmaven.repo.local=${WORKSPACE}/.repository -DexcludeVersions="${EXCLUDE_VERSIONS}" -DincludeVersions="${INCLUDE_VERSIONS}" \
+-DinstallationsDir="${INSTALL_FOLDER}" -Dfilter="${FILTER}" && publish filtered && check_results filtered
+${MVN} -f ${FROM}/pom.xml clean test -Dmaven.repo.local=${WORKSPACE}/.repository -DexcludeVersions="${EXCLUDE_VERSIONS}" -DincludeVersions="${INCLUDE_VERSIONS}" \
+-DinstallationsDir="${INSTALL_FOLDER}" -Dfilter=".*" && publish all && check_results all
 popd
 
 # set build description (Jenkins only sees the first occurrence)

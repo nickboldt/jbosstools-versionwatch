@@ -14,10 +14,14 @@ public class Settings {
 	public static final String md5checkVMProperty = "vwatch.md5check"; 
 	public static final String filterVMProperty = "vwatch.filter";
 	public static final String productVMProperty= "vwatch.product";
+	public static final String includeVersionsProperty= "vwatch.includeVersions";
+	public static final String excludeVersionsProperty= "vwatch.excludeVersions";
 	// Default values
 	private static boolean md5checkEnabled = false;	
 	private static String filter = null;
 	private static String product = "";
+	private static String includeVersions = "\\d+\\.\\d+\\.\\d+";
+	private static String excludeVersions = "";
 		
 	public static void setLogLevel(Level level) {
 		Settings.loglevel = level;
@@ -44,6 +48,19 @@ public class Settings {
 	}
 	public static String getProduct() {
 		return product;
+	}
+
+	public static String getIncludeVersions() {
+		return includeVersions;
+	}
+	public static void setIncludeVersions(String includeVersions) {
+		Settings.includeVersions = includeVersions;
+	}
+	public static String getExcludeVersions() {
+		return excludeVersions;
+	}
+	public static void setExcludeVersions(String excludeVersions) {
+		Settings.excludeVersions = excludeVersions;
 	}
 
 }

@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.jboss.tools.vwatch.Settings;
 import org.jboss.tools.vwatch.model.Installation;
 import org.jboss.tools.vwatch.model.Version;
 
@@ -64,7 +65,10 @@ public class FolderLookupSerivce  {
 		List<Installation> installations = new ArrayList<Installation>();
 		
 		VersionService vs = new VersionService();
-		
+
+		log.info("Include versions: " + Settings.getIncludeVersions());
+		log.info("Exclude versions: " + Settings.getExcludeVersions());
+
 		File root = new File(repoPath);
 			File[] listFiles = root.listFiles();
 			Arrays.sort(listFiles);
@@ -75,6 +79,7 @@ public class FolderLookupSerivce  {
 					i.setRootFolderName(f.getName());
 					setInstallationVersion(i);
 					installations.add(i);
+					log.info("Using install dir: "+f.toString());
 				}
 			}
 		return installations;
