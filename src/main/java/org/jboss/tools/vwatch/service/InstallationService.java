@@ -134,6 +134,7 @@ public class InstallationService {
 		Bundle b = bs.getBundleFromList(installation.getBundles(feature), found);
 		if (b == null ) {
 			b = new Bundle();
+			b.setInstallation(installation);
 			b.setName(found);
 		} else
 		{			

@@ -83,6 +83,7 @@ public class VersionService {
 		Version v1 = i1.getVersion();
 		Version v2 = i2.getVersion();
 
+
 		if (v1.getMajor() < v2.getMajor())
 			return i1;
 		if (v1.getMajor() > v2.getMajor())

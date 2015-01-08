@@ -67,6 +67,13 @@ public class BundleInstance {
 		this.bundleType.type = bundleType;
 	}
 
+	/**
+	 * Returns true if Bundle Instance type is JAR file
+	 */
+	public boolean isJar() {
+		return (getBundleType() | BundleType.JAR) == BundleType.JAR;
+	}
+
 	public String toString() {
 		return bundle.getName() + "," + version.toString();
 	}
@@ -97,6 +104,9 @@ public class BundleInstance {
 			else if ((bundleType.isDir()))
 			{				
 				File f = null;
+
+				// this needs to be changed for per file
+
 				f = new File(getAbsolutePath()+ ".zip");
 				FileService.getInstance().zipFolder(new File(getAbsolutePath()), f);				
 				md5 = MD5Service.getInstance().getMD5(new File(getAbsolutePath() + ".zip"));

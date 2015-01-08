@@ -8,11 +8,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class MD5Service {
-	private MessageDigest md = null;
+	private MessageDigest complete = null;
 	private static MD5Service instance = null;
 
 	private MD5Service() throws NoSuchAlgorithmException {
-		md = MessageDigest.getInstance("MD5");
+		complete = MessageDigest.getInstance("MD5");
 	}
 
 	public static MD5Service getInstance() {
@@ -27,28 +27,38 @@ public class MD5Service {
 		return instance;
 	}
 
-	public String getMD5(File f) {
-		String md5 = "";
-		try {
-			InputStream is = new FileInputStream(f.getAbsolutePath());
-			try {
-				is = new DigestInputStream(is, md);
-				while (is.read() != -1) ;
-					// do nothing
-			} finally {
-				is.close();
-			}
-			byte[] digest = md.digest();
-			StringBuffer sb = new StringBuffer();
-			for (int i = 0; i < digest.length; i++) {
-				sb.append(Integer.toString((digest[i] & 0xff) + 0x100, 16)
-						.substring(1));
-			}
-			md5 = sb.toString();
 
+	private  byte[] createChecksum(File filename) throws Exception {
+		InputStream fis =  new FileInputStream(filename);
+
+		byte[] buffer = new byte[1024];
+		int numRead;
+
+		do {
+			numRead = fis.read(buffer);
+			if (numRead > 0) {
+				complete.update(buffer, 0, numRead);
+			}
+		} while (numRead != -1);
+
+		fis.close();
+		return complete.digest();
+	}
+
+	// see this How-to for a faster way to convert
+	// a byte array to a HEX string
+	public  String getMD5(File filename)  {
+		byte[] b = new byte[0];
+		try {
+			b = createChecksum(filename);
 		} catch (Exception e) {
 			e.printStackTrace();
-		}		
-		return md5;
+		}
+		String result = "";
+
+		for (int i=0; i < b.length; i++) {
+			result += Integer.toString( ( b[i] & 0xff ) + 0x100, 16).substring( 1 );
+		}
+		return result;
 	}
 }

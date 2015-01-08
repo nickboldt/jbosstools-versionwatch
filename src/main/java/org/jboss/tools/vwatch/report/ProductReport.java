@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.jboss.tools.vwatch.counter.IssueCounter;
 import org.jboss.tools.vwatch.issue.FolderAndJarIssue;
 import org.jboss.tools.vwatch.issue.MD5Issue;
 import org.jboss.tools.vwatch.issue.MultipleVersionIssue;
@@ -45,9 +46,11 @@ public class ProductReport extends Report {
 		count = searchBundlesForIssues(class1, installation.getBundles(true));
 		count += searchBundlesForIssues(class1, installation.getBundles(false));
 		if (count == 0) {
-			add("No issues found");
+			add("No valid issues found");
 		} 
-		add(html.newLine());		
+		add(html.newLine());
+
+		IssueCounter.getInstance().setValue(class1,count);
 	}
 
 	private int searchBundlesForIssues(Class<? extends Issue> class1,		
@@ -63,7 +66,9 @@ public class ProductReport extends Report {
 					}
 					add(message);
 					add(html.newLine());
-					counter++;
+					if (i.getSeverity() != Severity.IGNORE)
+						counter++;
+
 				}
 			}
 

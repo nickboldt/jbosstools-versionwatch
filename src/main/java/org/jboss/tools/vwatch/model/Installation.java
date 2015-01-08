@@ -34,6 +34,12 @@ public class Installation {
 		this.rootFolderAbsolutePath = rootFolderAbsolutePath;
 	}
 
+	public String getTmpDir() {
+		File f = new File(rootFolderAbsolutePath + File.separator + eclipseFolder + File.separator + "tmp");
+		if (!f.exists()) f.mkdir();
+		return f.getAbsolutePath();
+	}
+
 	public Installation() {
 		this.plugins = new HashSet<Bundle>();
 		this.features = new HashSet<Bundle>();
