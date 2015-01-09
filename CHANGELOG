@@ -1,6 +1,21 @@
 Version Watch
 * tool for monitoring eclipse product bundles designed for JBoss Developer Studio
 
+Version 0.4.1
+* Version bumped indicator added
+
+Version 0.4
+* Deep MD5 check for jar archives added
+* Jar archive diffs shown directly in bundle tooltips
+* MD5 reimplemented (at least 10 times faster now)
+* Multiple JUnit tests for showing failures count directly in JUnit report
+
+Version 0.3
+* Reporting internals reimplemented
+* Product report feature added
+* Style changed
+* FolderAndJar issue validation added
+
 Version 0.2.1
 * support for filtering bundles (now enabled for regular expression matching, using -Dfilter=regex)
 

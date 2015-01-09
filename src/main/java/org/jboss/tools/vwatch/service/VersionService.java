@@ -198,7 +198,17 @@ public class VersionService {
 	public boolean isVersionGreaterOrEqual(Version v1, Version v2) {
 		return v2.toNumber() >= v1.toNumber();
 	}
-	
+
+	/**
+	 * Returns true if v2 is greater
+	 * @param v1
+	 * @param v2
+	 * @return
+	 */
+	public boolean isVersionGreater(Version v1, Version v2) {
+		return v2.toNumber() > v1.toNumber();
+	}
+
 	/**
 	 * Returns true if v1 and v2 are equal 
 	 * @param v1

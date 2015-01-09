@@ -13,6 +13,16 @@ public class Bundle {
 	
 	String name;	
 	List<BundleInstance> instances = new ArrayList<BundleInstance>();
+	Installation installation;
+	boolean bumped = false;
+
+	public Installation getInstallation() {
+		return installation;
+	}
+
+	public void setInstallation(Installation i) {
+		installation = i;
+	}
 
 	/**
 	 * Returns bundle issues
@@ -105,5 +115,12 @@ public class Bundle {
 		}
 		return null;
 	}
-	
+
+	public void setBumped() {
+		bumped = true;
+	}
+
+	public boolean getBumped() {
+		return bumped;
+	}
 }

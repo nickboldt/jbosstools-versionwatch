@@ -9,13 +9,7 @@ import org.jboss.tools.vwatch.issue.OkIssue;
 import org.jboss.tools.vwatch.model.Bundle;
 import org.jboss.tools.vwatch.model.Installation;
 import org.jboss.tools.vwatch.model.Issue;
-import org.jboss.tools.vwatch.validator.BundleValidator;
-import org.jboss.tools.vwatch.validator.FolderAndJarValidator;
-import org.jboss.tools.vwatch.validator.MD5Validator;
-import org.jboss.tools.vwatch.validator.OkValidator;
-import org.jboss.tools.vwatch.validator.PairValidator;
-import org.jboss.tools.vwatch.validator.Validator;
-import org.jboss.tools.vwatch.validator.VersionDecreasedValidator;
+import org.jboss.tools.vwatch.validator.*;
 
 /**
  * Evaluation Service
@@ -69,6 +63,7 @@ public class EvaluationService {
 		// prepare validator list		
 		pairValidators.add(new VersionDecreasedValidator());
 		pairValidators.add(new OkValidator());
+		pairValidators.add(new VersionBumped());
 		
 		bundleValidators.add(new FolderAndJarValidator());
 		

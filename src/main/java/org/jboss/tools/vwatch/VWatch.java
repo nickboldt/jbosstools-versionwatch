@@ -22,6 +22,7 @@ import org.jboss.tools.vwatch.service.StopWatch;
  */
 public class VWatch {
 
+	public static final String VERSION = "0.4.1";
 	private String repoPath = "/opt/vw";
 	private String filter = ".*";
 	private int loglevel = 4; // 7 = DEBUG, 6 = INFO, 4 = WARN (default), 3 = ERROR

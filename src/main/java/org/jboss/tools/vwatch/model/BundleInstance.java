@@ -15,7 +15,7 @@ public class BundleInstance {
 	String postfix;
 	String md5 = "";
 	BundleType bundleType = new BundleType(BundleType.NONE);
-	
+
 	long size;
 	List<Issue> issues = new ArrayList<Issue>();
 

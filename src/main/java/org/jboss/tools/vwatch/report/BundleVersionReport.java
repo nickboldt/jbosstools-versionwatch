@@ -201,12 +201,10 @@ public class BundleVersionReport extends Report {
 
 					printErrorLogInformation(i, bundleFromList);
 
-					bw.append("<td" + c + " " + tooltip + ">"
-							+ bundleFromList.getVersions().toString() + "</td>");
+					bw.append("<td " + c + " " + tooltip + ">"
+							+ getIcons(bundleFromList) + bundleFromList.getVersions().toString()  + "</td>");
 				} else {
-					bw.append("<td "
-							+ tooltip
-							+ "Bundle not available in this version\" class=\"none\">N/A</td>");
+					bw.append("<td " + "Bundle not available in this version\" class=\"none\">N/A</td>");
 				}
 			}
 
@@ -215,6 +213,14 @@ public class BundleVersionReport extends Report {
 
 		bw.append("</table>");
 
+	}
+
+	private String getIcons(Bundle b) {
+		String ret = "";
+		if (b.getBumped()) {
+			ret = "<img src=\"img\\bumped.png\"/>";
+		}
+		return ret;
 	}
 
 	private void printErrorLogHeader(String text) {
