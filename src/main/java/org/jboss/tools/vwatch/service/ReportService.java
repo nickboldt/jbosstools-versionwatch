@@ -44,6 +44,13 @@ public class ReportService {
 	 *            filter definition
 	 */
 	public void generateReport(List<Installation> installations) {
+		try {
+			FileService.getInstance().ExportResource("/bumped.png");
+			FileService.getInstance().ExportResource("/vwstyle.css");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		// add reports
 		reports.add(new BundleVersionReport(installations));
 		reports.add(new ProductReport(findInstallation(installations, Settings.getProduct())));

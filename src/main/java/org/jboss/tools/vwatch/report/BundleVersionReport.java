@@ -219,7 +219,7 @@ public class BundleVersionReport extends Report {
 	private String getIcons(Bundle b) {
 		String ret = "";
 		if (b.getBumped()) {
-			ret = "<img src=\"img\\bumped.png\"/>";
+			ret = "<img src=\"bumped.png\"/>";
 		}
 		return ret;
 	}

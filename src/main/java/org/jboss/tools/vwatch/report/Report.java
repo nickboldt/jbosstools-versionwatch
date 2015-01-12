@@ -40,8 +40,9 @@ public abstract class Report {
 	}
 	
 	private void createReportFile() {
-		String readCSSFile = CSSReader.readCSSFile("vwstyle.css");
-		File file = new File(getFileName());
+		ClassLoader classLoader = getClass().getClassLoader();
+		File file = new File(classLoader.getResource("vwstyle.css").getFile());
+
 		String filter = Settings.getFilter();
 
 		try {

@@ -4,7 +4,7 @@
 
 	<groupId>org.jboss.tools</groupId>
 	<artifactId>vwatch</artifactId>
-	<version>0.2.1-SNAPSHOT</version>
+	<version>0.4.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Version Watch</name>
 
@@ -32,7 +32,6 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.2</version>
-			<scope></scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -56,6 +55,11 @@
 		</dependency>
 	</dependencies>
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -117,9 +121,25 @@
        				<artifactId>maven-compiler-plugin</artifactId>
        				<version>2.3.1</version>
        				<configuration>
-           				<source>1.5</source>
-	           			<target>1.5</target>
+           				<source>1.6</source>
+	           			<target>1.6</target>
        				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
