@@ -1,9 +1,6 @@
 package org.jboss.tools.vwatch.service;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
@@ -74,6 +71,11 @@ public class FileService {
 		}
 
 		return jarFolder + resourceName;
+	}
+
+	public String getRelPath(String base, String path) {
+		String relative = new File(base).toURI().relativize(new File(path).toURI()).getPath();
+		return relative;
 	}
 }
 

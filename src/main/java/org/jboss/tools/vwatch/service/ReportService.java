@@ -1,5 +1,6 @@
 package org.jboss.tools.vwatch.service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import org.jboss.tools.vwatch.model.Installation;
 import org.jboss.tools.vwatch.report.BundleVersionReport;
 import org.jboss.tools.vwatch.report.ProductReport;
 import org.jboss.tools.vwatch.report.Report;
+import org.jboss.vwatch.util.CSSReader;
 
 /**
  * Service providing final report generating from given installations
@@ -19,6 +21,8 @@ import org.jboss.tools.vwatch.report.Report;
 public class ReportService {
 
 	private static ReportService instance = null;
+	private String cssContent;
+	private String bumpIcoPath;
 
 	public static ReportService getInstance() {
 		if (instance == null) {
@@ -45,8 +49,9 @@ public class ReportService {
 	 */
 	public void generateReport(List<Installation> installations) {
 		try {
-			FileService.getInstance().ExportResource("/bumped.png");
-			FileService.getInstance().ExportResource("/vwstyle.css");
+			bumpIcoPath = FileService.getInstance().ExportResource("/bumped.png");
+			String cssPath = FileService.getInstance().ExportResource("/vwstyle.css");
+			cssContent = CSSReader.readCSSFile(cssPath);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -68,4 +73,14 @@ public class ReportService {
 		}		
 		return installations.get(installations.size() - 1);
 	}
+
+	public String getCSSContent() {
+		return cssContent;
+	}
+
+	public String getBumpIcoPath() {
+		String relPath = FileService.getInstance().getRelPath(new File(System.getProperty("user.dir")).getAbsolutePath(), bumpIcoPath);
+		return  relPath;
+	}
+
 }

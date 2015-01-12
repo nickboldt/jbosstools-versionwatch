@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.jboss.tools.vwatch.Settings;
 import org.jboss.tools.vwatch.model.Installation;
 import org.jboss.tools.vwatch.service.LogService;
+import org.jboss.tools.vwatch.service.ReportService;
 import org.jboss.vwatch.util.CSSReader;
 import org.jboss.vwatch.util.HtmlWriter;
 
@@ -40,10 +41,7 @@ public abstract class Report {
 	}
 	
 	private void createReportFile() {
-		ClassLoader classLoader = getClass().getClassLoader();
-		File file = new File(classLoader.getResource("vwstyle.css").getFile());
-
-		String filter = Settings.getFilter();
+		File file = new File(getFileName());
 
 		try {
 			PrintWriter pw = new PrintWriter(file);
@@ -58,7 +56,7 @@ public abstract class Report {
 	}
 
 	protected void generateHeader() {		
-		String style = CSSReader.readCSSFile("vwstyle.css");
+		String style = ReportService.getInstance().getCSSContent();
 		add(html.html());
 		add(html.head());	
 		sb.append("<style type=\"text/css\">" + style + "</style>");

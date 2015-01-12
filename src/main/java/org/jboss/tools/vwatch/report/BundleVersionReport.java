@@ -21,6 +21,7 @@ import org.jboss.tools.vwatch.model.Installation;
 import org.jboss.tools.vwatch.model.Issue;
 import org.jboss.tools.vwatch.model.Severity;
 import org.jboss.tools.vwatch.service.BundleService;
+import org.jboss.tools.vwatch.service.ReportService;
 import org.jboss.tools.vwatch.service.StopWatch;
 import org.jboss.tools.vwatch.validator.PairValidator;
 
@@ -52,8 +53,6 @@ public class BundleVersionReport extends Report {
 	@Override
 	public void generateReport() {
 		
-		this.installations = installations;
-
 		File file = new File("output.html");
 		String filter = Settings.getFilter();
 
@@ -62,7 +61,7 @@ public class BundleVersionReport extends Report {
 		try {
 			PrintWriter pw = new PrintWriter(file);
 			BufferedWriter bw = new BufferedWriter(pw);
-			String style = readFile("vwstyle.css");
+			String style = ReportService.getInstance().getCSSContent();
 			bw.append("<html><head><title>JBDS Version Watch</title><style type=\"text/css\">"
 					+ style + "</style></head>");
 			bw.append("<body><h2>JBDS Version Watch</h2>");
@@ -94,21 +93,6 @@ public class BundleVersionReport extends Report {
 		}
 
 		log.warn("Report generated to file:///" + file.getAbsolutePath());
-	}
-
-	private String readFile(String file) throws IOException {
-		BufferedReader reader = new BufferedReader(new FileReader(file));
-		String line = null;
-		StringBuilder stringBuilder = new StringBuilder();
-		String ls = System.getProperty("line.separator");
-
-		while ((line = reader.readLine()) != null) {
-			stringBuilder.append(line);
-			stringBuilder.append(ls);
-		}
-
-		reader.close();
-		return stringBuilder.toString();
 	}
 
 	private void generateTable(BufferedWriter bw,
@@ -219,7 +203,8 @@ public class BundleVersionReport extends Report {
 	private String getIcons(Bundle b) {
 		String ret = "";
 		if (b.getBumped()) {
-			ret = "<img src=\"bumped.png\"/>";
+			String relPath = ReportService.getInstance().getBumpIcoPath();
+			ret = "<img src=\"" + relPath + "\"/>";
 		}
 		return ret;
 	}
