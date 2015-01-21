@@ -78,7 +78,7 @@ public class EvaluationService {
 	 * @param installations
 	 *            installation list for evaluation
 	 */
-	public void findConflicts(List<Installation> installations, String filter) {
+	public void findConflicts(List<Installation> installations) {
 
 		log.setLevel(Settings.getLogLevel());
 
@@ -172,9 +172,14 @@ public class EvaluationService {
 		log.setLevel(Settings.getLogLevel());
 
 		for (Bundle b2 : i2.getBundles(feature)) {
-			// only validate if the filter matches, which saves a ton of time
-			if (PairValidator.isNullFilter(Settings.getFilter())
-					|| b2.getName().matches(Settings.getFilter())) {
+			// only validate if the include/exclude filters match, which saves a ton of time
+			if (
+					(PairValidator.isNullFilter(Settings.getIncludeIUs())
+					|| b2.getName().matches(Settings.getIncludeIUs()))
+					&&
+					(PairValidator.isNullFilter(Settings.getExcludeIUs())
+							|| !b2.getName().matches(Settings.getExcludeIUs()))					
+					) {
 				Bundle b1 = bs.getBundleFromList(i1.getBundles(feature),
 						b2.getName());
 				if (b1 != null) {

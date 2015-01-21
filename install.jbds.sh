@@ -6,7 +6,10 @@
 # If you want to use this script locally, you need to set some overrides - see commandline args below
 
 # Usage: wget this script from raw.github, then call it from an "Execute shell" step in your job, before calling 
-# mvn -f vwatch/pom.xml clean test -DinstallationsDir="${INSTALL_FOLDER}" -Dfilter=".*jboss.*" -Dvwatch.md5check
+# mvn -f vwatch/pom.xml clean test -DinstallationsDir="${INSTALL_FOLDER}" -DincludeIUs=".*jboss.*" -Dvwatch.md5check
+
+# Here's an example to unpack a couple JBDS installers already on disk:
+# ./install.jbds.sh -JAVA /opt/sun-java2-8.0/bin/java -INSTALL_FOLDER /w/home-nboldt/tmp/jbds-installs/ -JBDS_INSTALLERS "/w/home-nboldt/tmp/JBDS_Installers/8.x/jboss-devstudio-8.0.2.GA-v20150114-2029-B382-installer-eap.jar, /w/home-nboldt/tmp/JBDS_Installers/8.x/jboss-devstudio-8.0.0.GA-v20141020-1042-B317-installer-standalone.jar"
 
 # Jenkins variables:
 
@@ -17,7 +20,7 @@ INSTALL_FOLDER=/home/hudson/static_build_env/jbds/versionwatch/installations
 # Folder from which to install the latest nightly JBDS build, and run the version watch comparing this latest against
 # the baseline JBDS_INSTALLERS. This will always overwrite if the version has changed since last time.
 
-# JBDS_INSTALLERS :: CSV list of additional installer jars to use. Will also use list of installers in JBDS_INSTALLERS_LISTFILE = install.jbds.list.txt. 
+# JBDS_INSTALLERS :: CSV list (with spaces!) of additional installer jars to use. Will also use list of installers in JBDS_INSTALLERS_LISTFILE = install.jbds.list.txt. 
 # If the target folder already exists, installation will be skipped. 
 # /qa/services/http/binaries/RHDS/builds/development/7.0.0.Beta2.installer/jbdevstudio-product-universal-7.0.0.Beta2-v20130626-0242-B345.jar, 
 # /qa/services/http/binaries/RHDS/builds/development/7.0.0.Beta1.installer/jbdevstudio-product-universal-7.0.0.Beta1-v20130529-0631-B257.jar 
@@ -77,10 +80,15 @@ ${JAVA} -version
 INSTALLER_LIST="${JBDS_INSTALLERS} `if [[ ${JBDS_INSTALLERS_LISTFILE} ]] && [[ -f ${JBDS_INSTALLERS_LISTFILE} ]]; then cat ${JBDS_INSTALLERS_LISTFILE}; fi`"
 if [[ ! ${INSTALLER_LIST} ]]; then 
   echo "No installers defined! Must specify installers to use as baseline for comparison using"
-  echo "  -JBDS_INSTALLERS /path/to/installer.jar,/path/to/installer2.jar"
+  echo "  -JBDS_INSTALLERS \"/path/to/installer.jar, /path/to/installer2.jar\""
   echo "    and/or"
   echo "  -JBDS_INSTALLERS_LISTFILE /path/to/listfile.txt"
   exit 1;
+fi
+
+if [[ ! -d ${INSTALL_FOLDER} ]]; then
+  echo "Warning: INSTALL_FOLDER = ${INSTALL_FOLDER} does not exist, so creating it."
+  mkdir -p ${INSTALL_FOLDER}
 fi
 
 # location for downloaded installers
@@ -179,4 +187,4 @@ done
 
 echo "Now run this:"
 echo ""
-echo "mvn clean test -DinstallationsDir=${INSTALL_FOLDER} -Dfilter=\".*jboss.*\" -Dvwatch.md5check"
+echo "mvn clean test -DinstallationsDir=${INSTALL_FOLDER} -DincludeIUs=\".*jboss.*\" -Dvwatch.md5check"

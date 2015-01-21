@@ -12,16 +12,18 @@ public class Settings {
 	private static Level loglevel = Level.WARN;	// -Dloglevel=4
 	// Properties that can be used with Version Watch (-Dproperty)
 	public static final String md5checkVMProperty = "vwatch.md5check"; 
-	public static final String filterVMProperty = "vwatch.filter";
 	public static final String productVMProperty= "vwatch.product";
 	public static final String includeVersionsProperty= "vwatch.includeVersions";
 	public static final String excludeVersionsProperty= "vwatch.excludeVersions";
+	public static final String includeIUsProperty= "vwatch.includeIUs";
+	public static final String excludeIUsProperty= "vwatch.excludeIUs";
 	// Default values
 	private static boolean md5checkEnabled = false;	
-	private static String filter = null;
 	private static String product = "";
 	private static String includeVersions = "\\d+\\.\\d+\\.\\d+";
 	private static String excludeVersions = "";
+	private static String includeIUs = ".*";
+	private static String excludeIUs = "";
 		
 	public static void setLogLevel(Level level) {
 		Settings.loglevel = level;
@@ -36,12 +38,6 @@ public class Settings {
 
 	public static void setMd5checkEnabled(boolean md5checkEnabled) {
 		Settings.md5checkEnabled = md5checkEnabled;
-	}
-	public static void setFilter(String filter) {
-		Settings.filter = filter;		
-	}
-	public static String getFilter() {
-		return filter;
 	}
 	public static void setProduct(String product) {
 		Settings.product = product;
@@ -63,4 +59,16 @@ public class Settings {
 		Settings.excludeVersions = excludeVersions;
 	}
 
+	public static String getIncludeIUs() {
+		return includeIUs;
+	}
+	public static void setIncludeIUs(String includeIUs) {
+		Settings.includeIUs = includeIUs;
+	}
+	public static String getExcludeIUs() {
+		return excludeIUs;
+	}
+	public static void setExcludeIUs(String excludeIUs) {
+		Settings.excludeIUs = excludeIUs;
+	}
 }

@@ -3,3 +3,4 @@ target/
 /default.html
 /product.html
 .settings
+report*.html

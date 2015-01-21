@@ -44,8 +44,10 @@ public class ReportService {
 	 * 
 	 * @param installations
 	 *            given list of installations
-	 * @param filter
-	 *            filter definition
+	 * @param includeIUs
+	 * 			  list of IUs to include the in report
+	 * @param excludeIUs
+	 *            list of IUs to exclude from the report
 	 */
 	public void generateReport(List<Installation> installations) {
 		try {

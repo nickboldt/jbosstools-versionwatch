@@ -42,8 +42,10 @@ public class BundleVersionReport extends Report {
 	 * 
 	 * @param installations
 	 *            given list of installations
-	 * @param filter
-	 *            filter definition
+	 * @param includeIUs
+	 * 			  list of IUs to include in report
+	 * @param excludeIUs
+	 *            list of IUs to exclude from report
 	 */
 	
 	public BundleVersionReport(List<Installation> installations) {
@@ -54,7 +56,8 @@ public class BundleVersionReport extends Report {
 	public void generateReport() {
 		
 		File file = new File("output.html");
-		String filter = Settings.getFilter();
+		String includeIUs = Settings.getIncludeIUs();
+		String excludeIUs = Settings.getExcludeIUs();
 
 		log.setLevel(Settings.getLogLevel());
 
@@ -66,10 +69,12 @@ public class BundleVersionReport extends Report {
 					+ style + "</style></head>");
 			bw.append("<body><h2>JBDS Version Watch</h2>");
 
-			bw.append("<h2>Feature list" + (!PairValidator.isNullFilter(filter) ? " for filter = " + filter : "") + "</h2>");
-			generateTable(bw, installations, true, filter);
-			bw.append("<br/><h2>Plugin list" + (!PairValidator.isNullFilter(filter) ? " for filter = " + filter : "") + "</h2>");
-			generateTable(bw, installations, false, filter);
+			bw.append("<h2>Feature list" + (!PairValidator.isNullFilter(includeIUs) ? "<br/>&nbsp;includeIUs = /" + includeIUs + "/": "") + 
+					(!PairValidator.isNullFilter(excludeIUs) ? (!PairValidator.isNullFilter(includeIUs)?" and ":"") + "<br/>&nbsp;excludeIUs = /" + excludeIUs  +"/": "") + "</h2>");
+			generateTable(bw, installations, true, includeIUs, excludeIUs);
+			bw.append("<br/><h2>Plugin list" + (!PairValidator.isNullFilter(includeIUs) ? "<br/>&nbsp;includeIUs = /" + includeIUs + "/": "") + 
+					(!PairValidator.isNullFilter(excludeIUs) ? (!PairValidator.isNullFilter(includeIUs)?" and ":"") + "<br/>&nbsp;excludeIUs = /" + excludeIUs +"/": "") + "</h2>");
+			generateTable(bw, installations, false, includeIUs, excludeIUs);
 
 			long elapsed = StopWatch.stop();
 			
@@ -96,7 +101,7 @@ public class BundleVersionReport extends Report {
 	}
 
 	private void generateTable(BufferedWriter bw,
-			List<Installation> installations, boolean feature, String filter)
+			List<Installation> installations, boolean feature, String includeIUs, String excludeIUs)
 			throws IOException {
 
 		log.setLevel(Settings.getLogLevel());
@@ -107,7 +112,10 @@ public class BundleVersionReport extends Report {
 
 		for (Installation i : installations) {
 			for (Bundle b : i.getBundles(feature)) {
-				if (PairValidator.isNullFilter(filter) || b.getName().matches(filter))
+				if (
+						(PairValidator.isNullFilter(includeIUs) || b.getName().matches(includeIUs)) && 
+						(PairValidator.isNullFilter(excludeIUs) || !b.getName().matches(excludeIUs))
+					) {
 					/*
 					if (featureSet.contains(b.getName())) {
 						Issue i = new Issue();
@@ -117,6 +125,7 @@ public class BundleVersionReport extends Report {
 					}
 					*/
 					featureSet.add(b.getName());
+				}
 			}
 		}
 
@@ -125,16 +134,21 @@ public class BundleVersionReport extends Report {
 		// first row
 
 		String bundles = "Plugin";
+		String bundleTitle = "";
 		if (feature) {
 			bundles = "Feature";
 		}
-		if (!PairValidator.isNullFilter(filter))
+		if (!PairValidator.isNullFilter(includeIUs))
 		{
-			bundles += " (filter=/" + filter + "/)";
+			bundleTitle += " includeIUs = /" + includeIUs + "/";
+		}
+		if (!PairValidator.isNullFilter(excludeIUs))
+		{
+			bundleTitle += (!PairValidator.isNullFilter(includeIUs)?", ":"") + " excludeIUs = /" + excludeIUs + "/";
 		}
 		printErrorLogHeader(bundles);
 
-		StringBuffer headerRow = new StringBuffer("<tr class=\"header\"><td><b>" + bundles + "</b></td>");
+		StringBuffer headerRow = new StringBuffer("<tr class=\"header\"><td title=\"" + bundleTitle + "\"><b>" + bundles + "</b></td>");
 		for (Installation i : installations) {
 			headerRow.append("<td><b>" + i.getRootFolderName() + "</b></td>");
 		}
@@ -241,6 +255,7 @@ public class BundleVersionReport extends Report {
 
 	@Override
 	protected String getFileName() {
+		// TODO: JBIDE-19058 refactor this to report_detailed.html
 		return "output.html";
 	}
 

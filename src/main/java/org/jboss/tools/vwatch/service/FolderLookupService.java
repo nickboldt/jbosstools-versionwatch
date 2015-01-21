@@ -16,7 +16,7 @@ import org.jboss.tools.vwatch.model.Version;
  * @author jpeterka
  *
  */
-public class FolderLookupSerivce  {
+public class FolderLookupService  {
 	
 	/**
 	 * Load installations based in the repo path
@@ -24,7 +24,7 @@ public class FolderLookupSerivce  {
 	 * @return
 	 */
 	
-	Logger log = Logger.getLogger(FolderLookupSerivce.class);
+	Logger log = Logger.getLogger(FolderLookupService.class);
 	LogService ls = new LogService();
 	
 	public List<Installation> getInstallations(String repoPath) {

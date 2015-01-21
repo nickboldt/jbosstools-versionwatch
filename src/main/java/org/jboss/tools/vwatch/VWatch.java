@@ -10,7 +10,7 @@ import org.jboss.tools.vwatch.Settings;
 import org.apache.log4j.PatternLayout;
 import org.jboss.tools.vwatch.model.Installation;
 import org.jboss.tools.vwatch.service.EvaluationService;
-import org.jboss.tools.vwatch.service.FolderLookupSerivce;
+import org.jboss.tools.vwatch.service.FolderLookupService;
 import org.jboss.tools.vwatch.service.ReportService;
 import org.jboss.tools.vwatch.service.StopWatch;
 
@@ -24,7 +24,6 @@ public class VWatch {
 
 	public static final String VERSION = "0.4.1";
 	private String repoPath = "/opt/vw";
-	private String filter = ".*";
 	private int loglevel = 4; // 7 = DEBUG, 6 = INFO, 4 = WARN (default), 3 = ERROR
 	private boolean md5checkEnabled = false;
 	Logger log = Logger.getLogger(VWatch.class);
@@ -56,7 +55,7 @@ public class VWatch {
 	/**
 	 * Read configuration from outside: Supported parameters: -
 	 * vwatch.installationsDir : root with eclipse installations -
-	 * vwatch.filter : restrict list of bundles to only those matching filter
+	 * vwatch.includeIUs / excludeIUs : restrict list of bundles to only those matching include/exclude filters
 	 */
 	private void configureVWatch() {
 		String logLevelStr = System.getProperty("vwatch.loglevel");
@@ -95,9 +94,6 @@ public class VWatch {
 			log.info("Installations dir set to:" + repoPath);
 		}
 
-		String filter = System.getProperty(Settings.filterVMProperty);
-		Settings.setFilter(filter);
-		
 		String md5check= System.getProperty(Settings.md5checkVMProperty);
 		if (md5check != null) {
 			Settings.setMd5checkEnabled(true);
@@ -116,6 +112,15 @@ public class VWatch {
 			Settings.setExcludeVersions(excludeVersions);
 		}
 
+		String includeIUs = System.getProperty(Settings.includeIUsProperty);
+		if (includeIUs != null) {
+			Settings.setIncludeIUs(includeIUs);
+		}
+		String excludeIUs = System.getProperty(Settings.excludeIUsProperty);
+		if (excludeIUs != null) {
+			Settings.setExcludeIUs(excludeIUs);
+		}
+
 	}
 
 	/**
@@ -132,7 +137,7 @@ public class VWatch {
 	 */
 	private void loadInstallations() {
 		log.info("Loading installation started");
-		FolderLookupSerivce fls = new FolderLookupSerivce();
+		FolderLookupService fls = new FolderLookupService();
 		installations = fls.getInstallations(repoPath);
 		log.info("Installations loaded");
 
@@ -146,7 +151,7 @@ public class VWatch {
 		// this is no longer needed because we can just sort the installations with Arrays.sort, which is much faster
 		//installations = es.sortInstallations(installations);
 		es.prepareValidators();
-		es.findConflicts(installations, filter);
+		es.findConflicts(installations);
 	}
 
 	/**

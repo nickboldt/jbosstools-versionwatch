@@ -24,7 +24,7 @@ JBDS_INSTALLERS=
 INSTALL_FOLDER=/home/hudson/static_build_env/jbds/versionwatch/installations
 
 # To generate a report containing fewer bundles/features, set a regex that will match only those you want in the report, eg., .*(hibernate|jboss|xulrunner).* or match everything with .*
-FILTER=".*(hibernate|jboss|xulrunner).*"
+INCLUDE_IUS=".*(hibernate|jboss|xulrunner).*"
 
 FROM=${WORKSPACE}/sources/vwatch
 STAGING=tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/staging/
@@ -38,6 +38,8 @@ JBDS_INSTALLERS_LISTFILE=${FROM}/install.jbds.list.txt
 # include and exclude patterns for which JBDS installs to use when producing the version diff report
 INCLUDE_VERSIONS="\d+\.\d+\.\d+"
 EXCLUDE_VERSIONS=""
+INCLUDE_IUS=".*"
+EXCLUDE_IUS=""
 
 # read commandline args
 while [[ "$#" -gt 0 ]]; do
@@ -49,9 +51,10 @@ while [[ "$#" -gt 0 ]]; do
     '-INSTALL_FOLDER') INSTALL_FOLDER="$2"; shift 1;;
     '-JBDS_INSTALLER_NIGHTLY_FOLDER') JBDS_INSTALLER_NIGHTLY_FOLDER="$2"; shift 1;;
     '-JBDS_INSTALLERS_LISTFILE') JBDS_INSTALLERS_LISTFILE="$2"; shift 1;;
-    '-FILTER') FILTER="$2"; shift 1;;
     '-INCLUDE_VERSIONS') INCLUDE_VERSIONS="$2"; shift 1;;
     '-EXCLUDE_VERSIONS') EXCLUDE_VERSIONS="$2"; shift 1;;
+    '-INCLUDE_IUS') INCLUDE_IUS="$2"; shift 1;;
+    '-EXCLUDE_IUS') EXCLUDE_IUS="$2"; shift 1;;
     *) others="$others,$1"; shift 0;;
   esac
   shift 1
@@ -96,6 +99,7 @@ publish ()
 {
   name=$1
   # rename in workspace
+  # TODO: JBIDE-19058 refactor this to report_detailed.html and report_summary.html
   mv ${FROM}/output.html ${FROM}/output_${name}.html
   mv ${FROM}/product.html ${FROM}/product_${name}.html
   # publish
@@ -116,9 +120,11 @@ popd
 # generate reports and publish them
 pushd ${WORKSPACE}
 ${MVN} -f ${FROM}/pom.xml clean test -Dmaven.repo.local=${WORKSPACE}/.repository -DexcludeVersions="${EXCLUDE_VERSIONS}" -DincludeVersions="${INCLUDE_VERSIONS}" \
--DinstallationsDir="${INSTALL_FOLDER}" -Dfilter="${FILTER}" && publish filtered && check_results filtered
+-DexcludeIUs="${EXCLUDE_IUS}" -DincludeIUs="${INCLUDE_IUS}" \
+-DinstallationsDir="${INSTALL_FOLDER}" && publish filtered && check_results filtered
 ${MVN} -f ${FROM}/pom.xml clean test -Dmaven.repo.local=${WORKSPACE}/.repository -DexcludeVersions="${EXCLUDE_VERSIONS}" -DincludeVersions="${INCLUDE_VERSIONS}" \
--DinstallationsDir="${INSTALL_FOLDER}" -Dfilter=".*" && publish all && check_results all
+-DexcludeIUs="${EXCLUDE_IUS}" -DincludeIUs=".*" \
+-DinstallationsDir="${INSTALL_FOLDER}" && publish all && check_results all
 popd
 
 # set build description (Jenkins only sees the first occurrence)

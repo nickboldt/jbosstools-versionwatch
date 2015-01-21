@@ -14,14 +14,15 @@
 		<!-- set installationsDir to the parent folder into which you have multiple versions of JBDS installed -->
 		<!-- <installationsDir></installationsDir> -->
 		
-		<!-- set a filter to restrict output to only some bundles -->
-		<!-- <filter>.*(jboss|hibernate|xulrunner).*</filter>  -->
-		<filter>.*</filter>
+		<!--  filter which IUs to track/not track -->
+		<includeIUs>.*</includeIUs>
+		<!-- <includeIUs>.*(jboss|hibernate|xulrunner).*</includeIUs>  -->
+		<!-- <excludeIUs>javax.wsdl|org.apache.commons.logging|org.eclipse.jdt.annotation</excludeIUs> -->
 
 		<!-- filter which versions to include/exclude in the report -->
 		<includeVersions>\d+\.\d+\.\d+</includeVersions>
 		<!-- <excludeVersions>(4|5|6)\.\d+\.\d+</excludeVersions> -->
-
+		
 		<!-- set a log verbosity level for log4j: 7 = DEBUG, 6 = INFO, 4 = WARN (default), 3 = ERROR  -->
 		<loglevel>4</loglevel>
 
@@ -76,6 +77,14 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.4</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
 				<configuration>
 					<archive>
 						<manifest>
@@ -98,10 +107,6 @@
 			                <value>${installationsDir}</value>
 			            </property>
 			            <property>
-			                <name>vwatch.filter</name>
-			                <value>${filter}</value>
-			            </property>			            
-			            <property>
 			                <name>vwatch.includeVersions</name>
 			                <value>${includeVersions}</value>
 			            </property>
@@ -109,6 +114,14 @@
 			                <name>vwatch.excludeVersions</name>
 			                <value>${excludeVersions}</value>
 			            </property>
+			            <property>
+			                <name>vwatch.includeIUs</name>
+			                <value>${includeIUs}</value>
+			            </property>			            
+			            <property>
+			                <name>vwatch.excludeIUs</name>
+			                <value>${excludeIUs}</value>
+			            </property>			            
 			            <property>
 			                <name>vwatch.loglevel</name>
 			                <value>${loglevel}</value>
@@ -124,22 +137,6 @@
            				<source>1.6</source>
 	           			<target>1.6</target>
        				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>

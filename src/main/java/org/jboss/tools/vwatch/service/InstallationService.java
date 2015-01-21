@@ -2,6 +2,7 @@ package org.jboss.tools.vwatch.service;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,6 +15,7 @@ import org.jboss.tools.vwatch.model.BundleType;
 import org.jboss.tools.vwatch.model.Installation;
 import org.jboss.tools.vwatch.model.Issue;
 import org.jboss.tools.vwatch.model.Version;
+import org.jboss.tools.vwatch.validator.PairValidator;
 
 /**
  * Service providing single installation methods like bundle loading 
@@ -23,25 +25,27 @@ import org.jboss.tools.vwatch.model.Version;
 public class InstallationService {
 	
 	Logger log = Logger.getLogger(InstallationService.class);
-			
+
+	String includeIUs = Settings.getIncludeIUs();
+	String excludeIUs = Settings.getExcludeIUs();
+	
 	/**
 	 * Fill plugins and features informations
 	 * @param installation
 	 */
 	public void fillPluginsAndFeatures(Installation installation) {
-		readBundles(installation, true);
-		readBundles(installation, false);
+		readBundles(installation, true, includeIUs, excludeIUs);
+		readBundles(installation, false, includeIUs, excludeIUs);
 	}
 	
-	private void readBundles(Installation installation, boolean feature) {
+	private void readBundles(Installation installation, boolean feature, String includeIUs, String excludeIUs) {
 		FilenameFilter ff = new FilenameFilter() {
 			
 			public boolean accept(File dir, String name) {
 				
 				log.setLevel(Settings.getLogLevel());
-
+				// TODO should this be externalized to the includeVersions / excludeVersions properties?
 				if (name.matches(".+\\d+\\.\\d+.\\d+.+")) {
-					
 					log.info(name + " accepted");
 					return true;
 				}
@@ -58,9 +62,14 @@ public class InstallationService {
 				
 		String[] list = new File(bundleRoot).list(ff);
 		
-		for (String record  : list ) {			
-			Bundle bundle = parseAndGetBundle(installation, feature, record);
-			if (bundle != null) installation.getBundles(feature).add(bundle);
+		for (String record  : list ) {
+			if (
+					(PairValidator.isNullFilter(includeIUs) || record.matches(includeIUs)) && 
+					(PairValidator.isNullFilter(excludeIUs) || !record.matches(excludeIUs))
+				) {
+				Bundle bundle = parseAndGetBundle(installation, feature, record);
+				if (bundle != null) installation.getBundles(feature).add(bundle);
+			}
 		}		
 	}
 
@@ -103,7 +112,9 @@ public class InstallationService {
 			f.delete();
 			return null;
 		}
-				
+		
+		// exclude from report if we match the excludeIUs filter
+		
 		if (f.isDirectory()) {
 			bundleType = BundleType.DIR;
 		}
@@ -131,21 +142,36 @@ public class InstallationService {
 		String found = m2.group();
 		
 		BundleService bs = new BundleService();
-		Bundle b = bs.getBundleFromList(installation.getBundles(feature), found);
+		// always returns the FIRST instance matching the 'found' regex
+		// use getBundlesFromList to return ALL matching instances
+		Bundle b = bs.getBundleFromList(installation.getBundles(feature), found); 
 		if (b == null ) {
 			b = new Bundle();
 			b.setInstallation(installation);
 			b.setName(found);
-		} else
-		{			
+		} 
+		else {
+//			 TODO: figure out why bunchOfBundles.size() is always 1 
+//			// check for duplicate bundles
+//			Set<Bundle> bunchOfBundles = bs.getBundlesFromList(installation.getBundles(feature),found);
+//			if (bunchOfBundles.size()>1)
+//			{
+//				for (Bundle duplicate_bundle : bunchOfBundles) {
+//					log.error("Found dupe: " + duplicate_bundle.getName() + " :: " + duplicate_bundle.getVersion());
+//				}
+//			}
 			// if it contains same instance
 			BundleInstance instance = b.getInstance(bi);
 			if (instance != null) {
+//				log.error("Found bundle instance:  " + instance.getAbsolutePath());
+//				log.error("Found version: " + instance.getVersion());
 				// just add BundleType flag
 				instance.setBundleType(instance.getBundleType() | bundleType);
 				// return null, instance already exists
 				return null;
 			} else {
+//				log.error("Found bundle:  " + b.getFullName());
+//				log.error("Found version: " + b.getVersion());
 				Issue e = new MultipleVersionIssue(b);
 				b.getIssues().add(e);				
 			}
@@ -153,7 +179,7 @@ public class InstallationService {
 		
 		bi.setBundle(b);		
 				
-		// parse potfix TBD
+		// parse postfix TBD
 		bi.setPostfix("");
 
 		log.setLevel(Settings.getLogLevel());
