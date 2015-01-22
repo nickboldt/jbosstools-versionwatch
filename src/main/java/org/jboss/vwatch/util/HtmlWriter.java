@@ -40,4 +40,6 @@ public class HtmlWriter {
 		return new Tag("<h3>");
 	}
 
+	public Tag b() {return new Tag("<b>"); };
+
 }

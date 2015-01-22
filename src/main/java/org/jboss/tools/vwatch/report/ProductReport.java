@@ -1,5 +1,6 @@
 package org.jboss.tools.vwatch.report;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -56,13 +57,15 @@ public class ProductReport extends Report {
 	private int searchBundlesForIssues(Class<? extends Issue> class1,		
 			Set<Bundle> bundles) {
 		int counter = 0;
+		List<String> ignored = new ArrayList<String>();
+
 		for (Bundle b : bundles) {
 			List<Issue> issues = b.getIssues();
 			for (Issue i : issues) {
 				if (i.getClass().equals(class1)) {
 					String message = i.getReferenceBundle().getFullName();					
 					if (i.getSeverity() == Severity.IGNORE) {
-						message += " - ignored, known issue";
+						ignored.add(message);
 					}
 					add(message);
 					add(html.newLine());
@@ -72,6 +75,17 @@ public class ProductReport extends Report {
 				}
 			}
 
+		}
+		if (ignored.size() > 0) {
+			add(html.newLine());
+			add(html.b());
+			add("Ignored/known issues:");
+			add(html.b().end());
+			add(html.newLine());
+			for (String s : ignored) {
+				add(s);
+				add(html.newLine());
+			}
 		}
 		return counter;
 	}

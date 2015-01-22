@@ -16,7 +16,7 @@ import org.jboss.tools.vwatch.validator.PairValidator;
  */
 public class MultipleVersionIssue extends Issue {
 
-	String[] ignore = {"javax.wsdl","org.apache.commons.logging"};
+	String[] ignore = {"javax.wsdl","org.apache.commons.logging","org.eclipse.jdt.annotation"};
 	
 	private MultipleVersionIssue() {} 
 	
