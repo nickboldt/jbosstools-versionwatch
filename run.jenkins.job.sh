@@ -106,6 +106,7 @@ publish ()
   echo "mkdir ${JOB_NAME}" | sftp ${STAGING}
   rsync -Pzrlt --rsh=ssh --protocol=28 ${FROM}/output_${name}.html ${DEST}/results_B${BUILD_NUMBER}_${BUILD_ID}_${name}.html
   rsync -Pzrlt --rsh=ssh --protocol=28 ${FROM}/product_${name}.html ${DEST}/report_B${BUILD_NUMBER}_${BUILD_ID}_${name}.html
+  rsync -Pzrlt --rsh=ssh --protocol=28 ${FROM}/target/*.css ${FROM}/target/*.png ${DEST}/target/
   # create links to html files (must be all on one line)
   DESCRIPTION="${DESCRIPTION}"'<li><a href="'${URL}'/results_B'${BUILD_NUMBER}'_'${BUILD_ID}'_'${name}'.html">Results</a>, <a href="'${URL}'/report_B'${BUILD_NUMBER}'_'${BUILD_ID}'_'${name}'.html">Report</a> for /.*/</li>'
 }
