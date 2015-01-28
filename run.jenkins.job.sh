@@ -83,32 +83,34 @@ export PATH
 # add more auditing/tests here as needed
 check_results ()
 {
-  name=$1
-  calltoaction=":: See ${URL}/results_B${BUILD_NUMBER}_${BUILD_ID}_${name}.html and ${URL}/report_B${BUILD_NUMBER}_${BUILD_ID}_${name}.html"
-  if [[ ! `egrep -l "<td>|<tr>" ${FROM}/output_${name}.html` ]]; then
-    echo "FAILURE IN OUTPUT: Empty results in output_${name}.html"
+  label=$1 # Title Case
+  name=${label,,} # lowercase
+  calltoaction=":: See ${label} Reports: ${URL}/${BUILD_ID}_B${BUILD_NUMBER}_report_detailed_${name}.html and ${URL}/${BUILD_ID}_B${BUILD_NUMBER}_report_summary_${name}.html"
+  if [[ ! `egrep -l "<td>|<tr>" ${FROM}/report_detailed_${name}.html` ]]; then
+    echo "FAILURE IN OUTPUT: Empty results in report_detailed_${name}.html"
     echo $calltoaction
   fi
-  if [[ `egrep -l "ERROR:" ${FROM}/output_${name}.html` ]]; then
-    echo "FAILURE IN OUTPUT: Errors found in output_${name}.html"
+  if [[ `egrep -l "ERROR:" ${FROM}/report_detailed_${name}.html` ]]; then
+    echo "FAILURE IN OUTPUT: Errors found in report_detailed_${name}.html"
     echo $calltoaction
   fi
 }
 
 publish ()
 {
-  name=$1
+  label=$1 # Title Case
+  name=${label,,} # lowercase
   # rename in workspace
-  # TODO: JBIDE-19058 refactor this to report_detailed.html and report_summary.html
-  mv ${FROM}/output.html ${FROM}/output_${name}.html
-  mv ${FROM}/product.html ${FROM}/product_${name}.html
+  mv ${FROM}/report_detailed.html ${FROM}/report_detailed_${name}.html
+  mv ${FROM}/report_summary.html ${FROM}/report_summary_${name}.html
   # publish
   echo "mkdir ${JOB_NAME}" | sftp ${STAGING}
-  rsync -Pzrlt --rsh=ssh --protocol=28 ${FROM}/output_${name}.html ${DEST}/results_B${BUILD_NUMBER}_${BUILD_ID}_${name}.html
-  rsync -Pzrlt --rsh=ssh --protocol=28 ${FROM}/product_${name}.html ${DEST}/report_B${BUILD_NUMBER}_${BUILD_ID}_${name}.html
+  rsync -Pzrlt --rsh=ssh --protocol=28 ${FROM}/report_detailed_${name}.html ${DEST}/${BUILD_ID}_B${BUILD_NUMBER}_report_detailed_${name}.html
+  rsync -Pzrlt --rsh=ssh --protocol=28 ${FROM}/report_summary_${name}.html ${DEST}/${BUILD_ID}_B${BUILD_NUMBER}_report_summary_${name}.html
   rsync -Pzrlt --rsh=ssh --protocol=28 ${FROM}/target/*.css ${FROM}/target/*.png ${DEST}/target/
   # create links to html files (must be all on one line)
-  DESCRIPTION="${DESCRIPTION}"'<li><a href="'${URL}'/results_B'${BUILD_NUMBER}'_'${BUILD_ID}'_'${name}'.html">Results</a>, <a href="'${URL}'/report_B'${BUILD_NUMBER}'_'${BUILD_ID}'_'${name}'.html">Report</a> for /.*/</li>'
+  DESCRIPTION="${DESCRIPTION}"'<li>'${label}' <a href="'${URL}'/'${BUILD_ID}'_B'${BUILD_NUMBER}'_report_detailed_'${name}'.html">Details</a>,\
+   <a href="'${URL}'/'${BUILD_ID}'_B'${BUILD_NUMBER}'_report_summary_'${name}'.html">Summary</a></li>'
 }
 
 #################################################################
@@ -118,14 +120,17 @@ pushd ${FROM}
 . ${FROM}/install.jbds.sh -JBDS_INSTALLERS_LISTFILE ${JBDS_INSTALLERS_LISTFILE}
 popd
 
+# clean up leftovers from previous builds
+pushd ${FROM}; rm -f output.html product.html *report*.html; popd
+
 # generate reports and publish them
 pushd ${WORKSPACE}
-${MVN} -f ${FROM}/pom.xml clean test -Dmaven.repo.local=${WORKSPACE}/.repository -DexcludeVersions="${EXCLUDE_VERSIONS}" -DincludeVersions="${INCLUDE_VERSIONS}" \
--DexcludeIUs="${EXCLUDE_IUS}" -DincludeIUs="${INCLUDE_IUS}" \
--DinstallationsDir="${INSTALL_FOLDER}" && publish filtered && check_results filtered
-${MVN} -f ${FROM}/pom.xml clean test -Dmaven.repo.local=${WORKSPACE}/.repository -DexcludeVersions="${EXCLUDE_VERSIONS}" -DincludeVersions="${INCLUDE_VERSIONS}" \
--DexcludeIUs="${EXCLUDE_IUS}" -DincludeIUs=".*" \
--DinstallationsDir="${INSTALL_FOLDER}" && publish all && check_results all
+  ${MVN} -f ${FROM}/pom.xml clean test -fn -Dmaven.repo.local=${WORKSPACE}/.repository -DexcludeVersions="${EXCLUDE_VERSIONS}" -DincludeVersions="${INCLUDE_VERSIONS}" \
+  -DexcludeIUs="${EXCLUDE_IUS}" -DincludeIUs="${INCLUDE_IUS}" \
+  -DinstallationsDir="${INSTALL_FOLDER}" && publish Filtered && check_results Filtered
+  ${MVN} -f ${FROM}/pom.xml clean test -fn -Dmaven.repo.local=${WORKSPACE}/.repository -DexcludeVersions="${EXCLUDE_VERSIONS}" -DincludeVersions="${INCLUDE_VERSIONS}" \
+  -DexcludeIUs="${EXCLUDE_IUS}" -DincludeIUs=".*" \
+  -DinstallationsDir="${INSTALL_FOLDER}" && publish All && check_results All
 popd
 
 # set build description (Jenkins only sees the first occurrence)

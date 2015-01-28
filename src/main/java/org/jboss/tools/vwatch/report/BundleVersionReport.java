@@ -55,7 +55,7 @@ public class BundleVersionReport extends Report {
 	@Override
 	public void generateReport() {
 		
-		File file = new File("output.html");
+		File file = new File("report_detailed.html");
 		String includeIUs = Settings.getIncludeIUs();
 		String excludeIUs = Settings.getExcludeIUs();
 
@@ -255,8 +255,7 @@ public class BundleVersionReport extends Report {
 
 	@Override
 	protected String getFileName() {
-		// TODO: JBIDE-19058 refactor this to report_detailed.html
-		return "output.html";
+		return "report_detailed.html";
 	}
 
 	

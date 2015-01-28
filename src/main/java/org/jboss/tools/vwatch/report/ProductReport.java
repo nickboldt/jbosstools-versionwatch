@@ -130,8 +130,7 @@ public class ProductReport extends Report {
 
 	@Override
 	protected String getFileName() {
-		// TODO: JBIDE-19058 refactor this to report_summary.html
-		return "product.html";
+		return "report_summary.html";
 	}
 
 
