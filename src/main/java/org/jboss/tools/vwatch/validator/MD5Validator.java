@@ -153,9 +153,18 @@ public class MD5Validator extends PairValidator {
 	 */
 	private HashMap<String, File> getHashMapFromCol(Collection<File> col, String root) {
 		HashMap<String, File> h = new HashMap<String, File>();
-		for (File f : col) {
-			String relPath = f.getAbsolutePath().split(root + File.separator)[1];
-			h.put(relPath,f);
+		try {
+
+			for (File f : col) {
+				String absPath = f.getAbsolutePath().replace("\\","/");
+				String root2 = root.replace("\\","/");
+				String[] split = absPath.split(root2 + "/");
+				String relPath = split[1];
+				h.put(relPath, f);
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			throw new RuntimeException("Problem processing collection for MD5Validator:" + e);
 		}
 		return h;
 	}
@@ -247,4 +256,3 @@ public class MD5Validator extends PairValidator {
 		return (md5first.equals(md5second));
 	}
 }
-
