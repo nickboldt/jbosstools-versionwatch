@@ -65,7 +65,7 @@ public class BundleVersionReport extends Report {
 			PrintWriter pw = new PrintWriter(file);
 			BufferedWriter bw = new BufferedWriter(pw);
 			String style = ReportService.getInstance().getCSSContent();
-			bw.append("<html><head><title>JBDS Version Watch</title><style type=\"text/css\">"
+			bw.append("<html><head><title>Version Watch</title><style type=\"text/css\">"
 					+ style + "</style></head>");
 			bw.append("<body><h2>JBDS Version Watch</h2>");
 

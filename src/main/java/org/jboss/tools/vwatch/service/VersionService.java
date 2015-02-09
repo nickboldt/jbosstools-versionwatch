@@ -32,7 +32,7 @@ public class VersionService {
 		log.setLevel(Settings.getLogLevel());
 
 		// check format
-		if (text.matches("jbds-\\d+\\.\\d+\\.\\d+.*")) {
+		if (text.matches("(jbds|eclipse|jbt)-\\d+\\.\\d+\\.\\d+.*")) {
 
 			// Find version
 			Pattern regex = Pattern.compile(Settings.getIncludeVersions().toString());
