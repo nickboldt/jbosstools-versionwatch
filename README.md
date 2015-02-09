@@ -19,9 +19,9 @@ VersionWatch (vwatch) is application for comparing bundles across several eclips
 Version watch requires one folder containing several Eclipse installation, for example:
 
 * /opt/vw/
-    * eclipse-4.2.0
-    * eclispe-4.2.1
-    * eclipse-4.2.2
+    * eclipse-4.2.0-final
+    * eclispe-4.2.1-m1
+    * eclipse-4.2.2-m2
 
 ## Execution ##
   
