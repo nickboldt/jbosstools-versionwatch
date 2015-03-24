@@ -7,8 +7,9 @@
 # configuration / defaults
 
 # where is maven?
-JAVA_HOME=/qa/tools/opt/jdk1.7.0_last
-M2_HOME=/qa/tools/opt/apache-maven-3.1.1
+if [[ ! ${NATIVE_TOOLS} ]]; then NATIVE_TOOLS=/qa/tools/opt; fi
+JAVA_HOME=${NATIVE_TOOLS}/jdk1.8.0_last
+M2_HOME=/qa/tools/opt/apache-maven-3.1.1 # don't use NATIVE_TOOLS because it might be /qa/tools/opt/amd64 and there's no /qa/tools/opt/amd64/apache-maven-3.1.1
 PATH=$PATH:$M2_HOME/bin:$JAVA_HOME/bin
 MVN=${M2_HOME}/bin/mvn
 
@@ -117,7 +118,7 @@ publish ()
 
 # do JBDS installs so we can compare them
 pushd ${FROM}
-. ${FROM}/install.jbds.sh -JBDS_INSTALLERS_LISTFILE ${JBDS_INSTALLERS_LISTFILE}
+. ${FROM}/install.jbds.sh -JBDS_INSTALLERS_LISTFILE ${JBDS_INSTALLERS_LISTFILE} -JAVA ${JAVA_HOME}/bin/java
 popd
 
 # clean up leftovers from previous builds

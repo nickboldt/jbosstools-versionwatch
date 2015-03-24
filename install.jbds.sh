@@ -33,7 +33,7 @@ BASE_URL=http://www.qa.jboss.com/binaries/RHDS
 
 usage() {
   echo "$0"
-  echo "  [ -JAVA /qa/tools/opt/jdk1.6.0_last/bin/java ]"
+  echo "  [ -JAVA /qa/tools/opt/jdk1.8.0_last/bin/java ]"
   echo "  [ -BASE_URL http://www.qa.jboss.com/binaries/RHDS ]" 
   echo "  [ -INSTALL_FOLDER /home/hudson/static_build_env/jbds/versionwatch/installations"
   echo "  [ -JBDS_INSTALLER_NIGHTLY_FOLDER /path/to/builds/staging/devstudio.product_70/installer/"
@@ -48,7 +48,7 @@ fi
 # read commandline args
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-JAVA') JAVA="$2"; shift 1;; # /path/to/bin/java
+    '-JAVA') JAVA="$2"; shift 1;; # /path/to/bin/java8
     '-BASE_URL') BASE_URL="$2"; shift 1;; # if path to installer is not found locally, set a base URL instead from which to download; default: http://www.qa.jboss.com/binaries/RHDS
     '-INSTALL_FOLDER') INSTALL_FOLDER="$2"; shift 1;; # path to parent folder under which to perform installations, eg., /home/hudson/static_build_env/jbds/versionwatch/installations
     '-JBDS_INSTALLER_NIGHTLY_FOLDER') JBDS_INSTALLER_NIGHTLY_FOLDER="$2"; shift 1;; # Folder from which to install the latest nightly JBDS build
@@ -64,8 +64,9 @@ if [[ ${JAVA} ]]; then
     echo "Could not execute ${JAVA}! Please use -JAVA /path/to/bin/java"; exit 1
   fi
 else
-  if [[ -x /qa/tools/opt/jdk1.6.0_last/bin/java ]]; then 
-    JAVA=/qa/tools/opt/jdk1.6.0_last/bin/java
+  if [[ ! ${NATIVE_TOOLS} ]]; then NATIVE_TOOLS=/qa/tools/opt; fi
+  if [[ -x ${NATIVE_TOOLS}/jdk1.8.0_last/bin/java ]]; then 
+    JAVA=${NATIVE_TOOLS}/jdk1.8.0_last/bin/java
   elif [[ -x /usr/bin/java ]]; then
     JAVA=/usr/bin/java
   elif [[ -x /bin/java ]]; then
