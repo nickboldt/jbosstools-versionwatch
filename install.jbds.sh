@@ -137,7 +137,7 @@ installJBDS() {
     echo "${jar} not found, so download it from ${remoteJar}"
     pushd ${TMPDIR}/ >/dev/null; wget -nc ${remoteJar}; popd >/dev/null
   fi
-  ${JAVA} "${others}" -jar ${jar} ${INSTALL_FOLDER}/jbds-${version}.install.xml
+  ${JAVA} ${others} -jar ${jar} ${INSTALL_FOLDER}/jbds-${version}.install.xml
 }
 
 # install the latest nightly, caching the last version used in jbds-8.0.2.GA/version.txt so we only ever have one nightly at a time
