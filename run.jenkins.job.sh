@@ -41,6 +41,7 @@ INCLUDE_VERSIONS="\d+\.\d+\.\d+"
 EXCLUDE_VERSIONS=""
 INCLUDE_IUS=".*"
 EXCLUDE_IUS=""
+others=""
 
 # read commandline args
 while [[ "$#" -gt 0 ]]; do
@@ -60,8 +61,6 @@ while [[ "$#" -gt 0 ]]; do
   esac
   shift 1
 done
-# trim prefix space
-others=${others:1}
 
 # if not set commandline, use default upstream job based on this job's name -> devstudio.product_master, devstudio.product_8.0.luna, etc.
 if [[ ! ${UPSTREAM_JOB} ]]; then

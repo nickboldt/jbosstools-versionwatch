@@ -45,6 +45,7 @@ if [[ $# -eq 0 ]]; then
   usage; exit
 fi
 
+others=""
 # read commandline args
 while [[ "$#" -gt 0 ]]; do
   case $1 in
@@ -58,8 +59,6 @@ while [[ "$#" -gt 0 ]]; do
     esac
   shift 1
 done
-# trim prefix space
-others=${others:1}
 
 # which version of Java are we using? 
 if [[ ${JAVA} ]]; then
