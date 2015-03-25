@@ -118,7 +118,7 @@ publish ()
 
 # do JBDS installs so we can compare them
 pushd ${FROM}
-. ${FROM}/install.jbds.sh -JBDS_INSTALLERS_LISTFILE ${JBDS_INSTALLERS_LISTFILE} -JAVA ${JAVA_HOME}/bin/java
+. ${FROM}/install.jbds.sh -JBDS_INSTALLERS_LISTFILE ${JBDS_INSTALLERS_LISTFILE} -JAVA ${JAVA_HOME}/bin/java "${others}"
 popd
 
 # clean up leftovers from previous builds

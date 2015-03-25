@@ -54,6 +54,7 @@ while [[ "$#" -gt 0 ]]; do
     '-JBDS_INSTALLER_NIGHTLY_FOLDER') JBDS_INSTALLER_NIGHTLY_FOLDER="$2"; shift 1;; # Folder from which to install the latest nightly JBDS build
     '-JBDS_INSTALLERS') JBDS_INSTALLERS="$2"; shift 1;; 
     '-JBDS_INSTALLERS_LISTFILE') JBDS_INSTALLERS_LISTFILE="$2"; shift 1;; # path to install.jbds.list.txt or other file with CSV or one-per-line list of JBDS installers to run
+    *) others="$others,$1"; shift 0;;
     esac
   shift 1
 done
@@ -135,7 +136,7 @@ installJBDS() {
     echo "${jar} not found, so download it from ${remoteJar}"
     pushd ${TMPDIR}/ >/dev/null; wget -nc ${remoteJar}; popd >/dev/null
   fi
-  ${JAVA} -jar ${jar} ${INSTALL_FOLDER}/jbds-${version}.install.xml
+  ${JAVA} "${others}" -jar ${jar} ${INSTALL_FOLDER}/jbds-${version}.install.xml
 }
 
 # install the latest nightly, caching the last version used in jbds-8.0.2.GA/version.txt so we only ever have one nightly at a time
@@ -188,4 +189,4 @@ done
 
 echo "Now run this:"
 echo ""
-echo "mvn clean test -DinstallationsDir=${INSTALL_FOLDER} -DincludeIUs=\".*jboss.*\" -Dvwatch.md5check"
+echo "mvn clean test -DinstallationsDir=${INSTALL_FOLDER} -DincludeIUs=\".*jboss.*\" -Dvwatch.md5check ${others}"
