@@ -56,10 +56,12 @@ while [[ "$#" -gt 0 ]]; do
     '-EXCLUDE_VERSIONS') EXCLUDE_VERSIONS="$2"; shift 1;;
     '-INCLUDE_IUS') INCLUDE_IUS="$2"; shift 1;;
     '-EXCLUDE_IUS') EXCLUDE_IUS="$2"; shift 1;;
-    *) others="$others,$1"; shift 0;;
+    *) others="$others $1"; shift 0;;
   esac
   shift 1
 done
+# trim prefix space
+others=${others:1}
 
 # if not set commandline, use default upstream job based on this job's name -> devstudio.product_master, devstudio.product_8.0.luna, etc.
 if [[ ! ${UPSTREAM_JOB} ]]; then

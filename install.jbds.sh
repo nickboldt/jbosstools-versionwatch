@@ -54,10 +54,12 @@ while [[ "$#" -gt 0 ]]; do
     '-JBDS_INSTALLER_NIGHTLY_FOLDER') JBDS_INSTALLER_NIGHTLY_FOLDER="$2"; shift 1;; # Folder from which to install the latest nightly JBDS build
     '-JBDS_INSTALLERS') JBDS_INSTALLERS="$2"; shift 1;; 
     '-JBDS_INSTALLERS_LISTFILE') JBDS_INSTALLERS_LISTFILE="$2"; shift 1;; # path to install.jbds.list.txt or other file with CSV or one-per-line list of JBDS installers to run
-    *) others="$others,$1"; shift 0;;
+    *) others="$others $1"; shift 0;;
     esac
   shift 1
 done
+# trim prefix space
+others=${others:1}
 
 # which version of Java are we using? 
 if [[ ${JAVA} ]]; then
