@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # Purpose: run this script in in a Jenkins job to install multiple versions of JBDS, then compare the versions 
-# of plugins/features in those installations using https://github.com/jbdevstudio/jbdevstudio-qa/tree/master/vwatch
+# of plugins/features in those installations using https://github.com/jbosstools/jbosstools-versionwatch/tree/master
 
 # If you want to use this script locally, you need to set some overrides - see commandline args below
 
 # Usage: wget this script from raw.github, then call it from an "Execute shell" step in your job, before calling 
-# mvn -f vwatch/pom.xml clean test -DinstallationsDir="${INSTALL_FOLDER}" -DincludeIUs=".*jboss.*" -Dvwatch.md5check
+# mvn -f pom.xml clean test -DinstallationsDir="${INSTALL_FOLDER}" -DincludeIUs=".*jboss.*" -Dvwatch.md5check
 
 # Here's an example to unpack a couple JBDS installers already on disk:
 # ./install.jbds.sh -JAVA /opt/sun-java2-8.0/bin/java -INSTALL_FOLDER /w/home-nboldt/tmp/jbds-installs/ -JBDS_INSTALLERS "/w/home-nboldt/tmp/JBDS_Installers/8.x/jboss-devstudio-8.0.2.GA-v20150114-2029-B382-installer-eap.jar, /w/home-nboldt/tmp/JBDS_Installers/8.x/jboss-devstudio-8.0.0.GA-v20141020-1042-B317-installer-standalone.jar"

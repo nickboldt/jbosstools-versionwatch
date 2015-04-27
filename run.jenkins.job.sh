@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# script to run a jenkins job for vwatch
+# script to run a jenkins job for versionwatch
 
 #################################################################
 
@@ -27,7 +27,7 @@ INSTALL_FOLDER=/home/hudson/static_build_env/jbds/versionwatch/installations
 # To generate a report containing fewer bundles/features, set a regex that will match only those you want in the report, eg., .*(hibernate|jboss|xulrunner).* or match everything with .*
 INCLUDE_IUS=".*(hibernate|jboss|xulrunner).*"
 
-FROM=${WORKSPACE}/sources/vwatch
+FROM=${WORKSPACE}/sources
 STAGING=tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/staging/
 DEST=${STAGING}/${JOB_NAME}
 URL=http://download.jboss.org/jbosstools/builds/staging/${JOB_NAME}
