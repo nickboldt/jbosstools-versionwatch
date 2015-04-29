@@ -16,7 +16,7 @@
 # INSTALL_FOLDER :: Location where JBDS installations will be put; default: /home/hudson/static_build_env/jbds/versionwatch/installations
 INSTALL_FOLDER=/home/hudson/static_build_env/jbds/versionwatch/installations
 
-# JBDS_INSTALLER_NIGHTLY_FOLDER :: /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_70/installer/
+# JBDS_INSTALLER_NIGHTLY_FOLDER :: /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_master/installer/
 # Folder from which to install the latest nightly JBDS build, and run the version watch comparing this latest against
 # the baseline JBDS_INSTALLERS. This will always overwrite if the version has changed since last time.
 
@@ -36,7 +36,7 @@ usage() {
   echo "  [ -JAVA /qa/tools/opt/jdk1.8.0_last/bin/java ]"
   echo "  [ -BASE_URL http://www.qa.jboss.com/binaries/RHDS ]" 
   echo "  [ -INSTALL_FOLDER /home/hudson/static_build_env/jbds/versionwatch/installations"
-  echo "  [ -JBDS_INSTALLER_NIGHTLY_FOLDER /path/to/builds/staging/devstudio.product_70/installer/"
+  echo "  [ -JBDS_INSTALLER_NIGHTLY_FOLDER /path/to/9.0/snapshots/builds/devstudio.product_master/installer/"
   echo "  [ -JBDS_INSTALLERS_LISTFILE /path/to/install.jbds.list.txt"
   echo "  [ -JBDS_INSTALLERS /path/to/jbdevstudio-product-universal-7.0.0.Beta2-v20130626-0242-B345.jar, /path/to/jbdevstudio-product-universal-7.0.0.Beta1-v20130529-0631-B257.jar"
 }
