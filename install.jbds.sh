@@ -16,7 +16,7 @@
 # INSTALL_FOLDER :: Location where JBDS installations will be put; default: /home/hudson/static_build_env/jbds/versionwatch/installations
 INSTALL_FOLDER=/home/hudson/static_build_env/jbds/versionwatch/installations
 
-# JBDS_INSTALLER_NIGHTLY_FOLDER :: /qa/services/http/binaries/RHDS/mars/snapshots/builds/devstudio.product_master/installer/
+# JBDS_INSTALLER_NIGHTLY_FOLDER :: /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_master/installer/
 # Folder from which to install the latest nightly JBDS build, and run the version watch comparing this latest against
 # the baseline JBDS_INSTALLERS. This will always overwrite if the version has changed since last time.
 
