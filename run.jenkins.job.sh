@@ -28,9 +28,9 @@ INSTALL_FOLDER=/home/hudson/static_build_env/jbds/versionwatch/installations
 INCLUDE_IUS=".*(hibernate|jboss|xulrunner).*"
 
 FROM=${WORKSPACE}/sources
-STAGING=tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/staging/
-DEST=${STAGING}/${JOB_NAME}
-URL=http://download.jboss.org/jbosstools/builds/staging/${JOB_NAME}
+SNAPSHOTS=tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/
+DEST=${SNAPSHOTS}/${JOB_NAME}
+URL=http://download.jboss.org/jbosstools/mars/snapshots/builds/${JOB_NAME}
 DESCRIPTION=""
 
 # file from which to pull a list of JBDS installers to install
@@ -74,7 +74,7 @@ fi
 if [[ ! ${JBDS_INSTALLER_NIGHTLY_FOLDER} ]]; then
   # Folder from which to install the latest nightly JBDS build, and run the version watch comparing this latest against
   # the baseline JBDS_INSTALLERS. This will always overwrite if the version has changed since last time.
-  JBDS_INSTALLER_NIGHTLY_FOLDER=/qa/services/http/binaries/RHDS/builds/staging/${UPSTREAM_JOB}/installer/
+  JBDS_INSTALLER_NIGHTLY_FOLDER=/qa/services/http/binaries/RHDS/9.0/snapshots/builds/${UPSTREAM_JOB}/installer/
 fi
 
 # define globals in case they were overridden above
@@ -106,7 +106,7 @@ publish ()
   mv ${FROM}/report_detailed.html ${FROM}/report_detailed_${name}.html
   mv ${FROM}/report_summary.html ${FROM}/report_summary_${name}.html
   # publish
-  echo "mkdir ${JOB_NAME}" | sftp ${STAGING}
+  echo "mkdir ${JOB_NAME}" | sftp ${SNAPSHOTS}
   rsync -Pzrlt --rsh=ssh --protocol=28 ${FROM}/report_detailed_${name}.html ${DEST}/${BUILD_ID}_B${BUILD_NUMBER}_report_detailed_${name}.html
   rsync -Pzrlt --rsh=ssh --protocol=28 ${FROM}/report_summary_${name}.html ${DEST}/${BUILD_ID}_B${BUILD_NUMBER}_report_summary_${name}.html
   rsync -Pzrlt --rsh=ssh --protocol=28 ${FROM}/target/*.css ${FROM}/target/*.png ${DEST}/target/
