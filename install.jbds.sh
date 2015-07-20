@@ -140,39 +140,43 @@ installJBDS() {
   ${JAVA} ${others} -jar ${jar} ${INSTALL_FOLDER}/jbds-${version}.install.xml
 }
 
-# install the latest nightly, caching the last version used in jbds-8.0.2.GA/version.txt so we only ever have one nightly at a time
-# new query method for JBDS 8/9, eg., for jboss-devstudio-8.0.0.GA-v20141020-1042-B317-installer-standalone.jar
-for i in `find ${JBDS_INSTALLER_NIGHTLY_FOLDER} -name "jboss-devstudio-*-installer-standalone.jar"`; do
-  ver=${i##*-devstudio-}; ver=${ver%%-installer-standalone.jar}; # 8.0.0.GA-v20141020-1042-B317
-  f=${i##*-devstudio-}; f=${f%%-*}; # 8.0.0.GA
-  LATEST=${INSTALL_FOLDER}/jbds-${f}/version.txt
-  if [[ -d ${INSTALL_FOLDER}/jbds-${f} ]] && [[ -f ${LATEST} ]] && [[ `cat ${LATEST}` == $ver ]]; then 
-    echo "Existing JBDS install in ${INSTALL_FOLDER}/jbds-${f} (${ver})"
-  else
-    # wipe existing installation
-    if [[ ${f} ]] && [[ -d ${INSTALL_FOLDER}/jbds-${f} ]]; then rm -fr ${INSTALL_FOLDER}/jbds-${f}; fi
-    # echo "Install JBDS ${f} (${ver}) to ${INSTALL_FOLDER}/jbds-${f} ..."
-    installJBDS ${f} ${i}
-    echo "${ver}" > ${LATEST}
-  fi
-done
+if [[ ${JBDS_INSTALLER_NIGHTLY_FOLDER} ]] && [[ -d ${JBDS_INSTALLER_NIGHTLY_FOLDER} ]]; then 
+  # install the latest nightly, caching the last version used in jbds-8.0.2.GA/version.txt so we only ever have one nightly at a time
+  # new query method for JBDS 8/9, eg., for jboss-devstudio-8.0.0.GA-v20141020-1042-B317-installer-standalone.jar
+  for i in `find ${JBDS_INSTALLER_NIGHTLY_FOLDER} -name "jboss-devstudio-*-installer-standalone.jar"`; do
+    ver=${i##*-devstudio-}; ver=${ver%%-installer-standalone.jar}; # 8.0.0.GA-v20141020-1042-B317
+    f=${i##*-devstudio-}; f=${f%%-*}; # 8.0.0.GA
+    LATEST=${INSTALL_FOLDER}/jbds-${f}/version.txt
+    if [[ -d ${INSTALL_FOLDER}/jbds-${f} ]] && [[ -f ${LATEST} ]] && [[ `cat ${LATEST}` == $ver ]]; then 
+      echo "Existing JBDS install in ${INSTALL_FOLDER}/jbds-${f} (${ver})"
+    else
+      # wipe existing installation
+      if [[ ${f} ]] && [[ -d ${INSTALL_FOLDER}/jbds-${f} ]]; then rm -fr ${INSTALL_FOLDER}/jbds-${f}; fi
+      # echo "Install JBDS ${f} (${ver}) to ${INSTALL_FOLDER}/jbds-${f} ..."
+      installJBDS ${f} ${i}
+      echo "${ver}" > ${LATEST}
+    fi
+  done
 
-# install the latest nightly, caching the last version used in jbds-7.0.0.CR1/version.txt so we only ever have one nightly at a time
-# old query method for JBDS 5/6/7, eg., jbdevstudio-product-universal-7.1.0.GA-v20131208-0703-B592.jar
-for i in `find ${JBDS_INSTALLER_NIGHTLY_FOLDER} -name "jbdevstudio-product-universal-*.jar"`; do
-  ver=${i##*-universal-}; ver=${ver%%.jar}; # 7.0.0.Beta2-v20130626-0242-B345
-  f=${i##*-universal-}; f=${f%%-*}; # 7.0.0.Beta2
-  LATEST=${INSTALL_FOLDER}/jbds-${f}/version.txt
-  if [[ -d ${INSTALL_FOLDER}/jbds-${f} ]] && [[ -f ${LATEST} ]] && [[ `cat ${LATEST}` == $ver ]]; then 
-    echo "Existing JBDS install in ${INSTALL_FOLDER}/jbds-${f} (${ver})"
-  else
-    # wipe existing installation
-    if [[ ${f} ]] && [[ -d ${INSTALL_FOLDER}/jbds-${f} ]]; then rm -fr ${INSTALL_FOLDER}/jbds-${f}; fi
-    # echo "Install JBDS ${f} (${ver}) to ${INSTALL_FOLDER}/jbds-${f} ..."
-    installJBDS ${f} ${i}
-    echo "${ver}" > ${LATEST}
-  fi
-done
+  # install the latest nightly, caching the last version used in jbds-7.0.0.CR1/version.txt so we only ever have one nightly at a time
+  # old query method for JBDS 5/6/7, eg., jbdevstudio-product-universal-7.1.0.GA-v20131208-0703-B592.jar
+  for i in `find ${JBDS_INSTALLER_NIGHTLY_FOLDER} -name "jbdevstudio-product-universal-*.jar"`; do
+    ver=${i##*-universal-}; ver=${ver%%.jar}; # 7.0.0.Beta2-v20130626-0242-B345
+    f=${i##*-universal-}; f=${f%%-*}; # 7.0.0.Beta2
+    LATEST=${INSTALL_FOLDER}/jbds-${f}/version.txt
+    if [[ -d ${INSTALL_FOLDER}/jbds-${f} ]] && [[ -f ${LATEST} ]] && [[ `cat ${LATEST}` == $ver ]]; then 
+      echo "Existing JBDS install in ${INSTALL_FOLDER}/jbds-${f} (${ver})"
+    else
+      # wipe existing installation
+      if [[ ${f} ]] && [[ -d ${INSTALL_FOLDER}/jbds-${f} ]]; then rm -fr ${INSTALL_FOLDER}/jbds-${f}; fi
+      # echo "Install JBDS ${f} (${ver}) to ${INSTALL_FOLDER}/jbds-${f} ..."
+      installJBDS ${f} ${i}
+      echo "${ver}" > ${LATEST}
+    fi
+  done
+else
+  echo "[ERROR] No nightly JBDS install found in JBDS_INSTALLER_NIGHTLY_FOLDER = ${JBDS_INSTALLER_NIGHTLY_FOLDER}"
+fi
 
 # install stable releases + development milestones (baselines for comparison)
 for i in ${INSTALLER_LIST}; do
