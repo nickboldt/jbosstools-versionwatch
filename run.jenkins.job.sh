@@ -74,7 +74,14 @@ fi
 if [[ ! ${JBDS_INSTALLER_NIGHTLY_FOLDER} ]]; then
   # Folder from which to install the latest nightly JBDS build, and run the version watch comparing this latest against
   # the baseline JBDS_INSTALLERS. This will always overwrite if the version has changed since last time.
-  JBDS_INSTALLER_NIGHTLY_FOLDER=/qa/services/http/binaries/RHDS/9.0/snapshots/builds/${UPSTREAM_JOB}/installer/
+  if [[ -f /qa/services/http/binaries/RHDS/9.0/snapshots/builds/${UPSTREAM_JOB}/latest/all/ ]]; then # JBDS 9
+    JBDS_INSTALLER_NIGHTLY_FOLDER=/qa/services/http/binaries/RHDS/9.0/snapshots/builds/${UPSTREAM_JOB}/latest/all/
+  elif [[ -f /qa/services/http/binaries/RHDS/builds/staging/${UPSTREAM_JOB}/installer/ ]]; then # JBDS 8
+    JBDS_INSTALLER_NIGHTLY_FOLDER=/qa/services/http/binaries/RHDS/builds/staging/${UPSTREAM_JOB}/installer/
+  fi
+fi
+if [[ ! ${JBDS_INSTALLER_NIGHTLY_FOLDER} ]]; then
+  echo "[ERROR] No JBDS nightly folder defined in JBDS_INSTALLER_NIGHTLY_FOLDER = ${JBDS_INSTALLER_NIGHTLY_FOLDER}"
 fi
 
 # define globals in case they were overridden above
