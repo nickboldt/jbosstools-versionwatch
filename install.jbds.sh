@@ -102,12 +102,7 @@ installJBDS() {
   version=${1}
   jar=${2}
 
-  # up to JBDS 8.0.0.Alpha1, use old namespace
-  if [[ ${version:0:1} -le 7 ]] || [[ ${version:0:12} == "8.0.0.Alpha1" ]]; then 
-    namespace=com.jboss.jbds.installer
-  else
-    namespace=com.jboss.devstudio.core.installer
-  fi
+  namespace=com.jboss.devstudio.core.installer
   echo "<?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <AutomatedInstallation langpack='eng'>
 <${namespace}.HTMLInfoPanelWithRootWarning id='introduction'/>
