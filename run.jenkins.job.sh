@@ -9,7 +9,7 @@
 # where is maven?
 if [[ ! ${NATIVE_TOOLS} ]]; then NATIVE_TOOLS=/qa/tools/opt; fi
 JAVA_HOME=${NATIVE_TOOLS}/jdk1.8.0_last
-M2_HOME=/qa/tools/opt/apache-maven-3.1.1 # don't use NATIVE_TOOLS because it might be /qa/tools/opt/amd64 and there's no /qa/tools/opt/amd64/apache-maven-3.1.1
+M2_HOME=/qa/tools/opt/apache-maven-3.2.5 # don't use NATIVE_TOOLS because it might be /qa/tools/opt/amd64 and there's no /qa/tools/opt/amd64/apache-maven-3.1.1
 PATH=$PATH:$M2_HOME/bin:$JAVA_HOME/bin
 MVN=${M2_HOME}/bin/mvn
 
@@ -30,7 +30,7 @@ INCLUDE_IUS=".*(hibernate|jboss|xulrunner).*"
 DESCRIPTION=""
 
 # file from which to pull a list of JBDS installers to install
-JBDS_INSTALLERS_LISTFILE=${SOURCE_PATH}/install.jbds.list.txt
+JBDS_INSTALLERS_LISTFILE=${SRC_PATH}/install.jbds.list.txt
 
 # include and exclude patterns for which JBDS installs to use when producing the version diff report
 INCLUDE_VERSIONS="\d+\.\d+\.\d+"
@@ -60,9 +60,8 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
-SOURCE_PATH=${WORKSPACE}/sources
-DESTINATION=tools@filemgmt.jboss.org:/downloads_htdocs/tools
-TARGET_PATH=${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_ID}-B${BUILD_NUMBER}
+SRC_PATH=${WORKSPACE}/sources
+TRG_PATH=${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_ID}-B${BUILD_NUMBER}
 URL=http://download.jboss.org/jbosstools/${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_ID}-B${BUILD_NUMBER}
 
 # if not set commandline, use default upstream job based on this job's name -> devstudio.product_master, devstudio.product_8.0.luna, etc.
@@ -98,11 +97,11 @@ check_results ()
   label=$1 # Title Case
   name=${label,,} # lowercase
   calltoaction=":: See ${label} Reports: ${URL}/report_detailed_${name}.html and ${URL}/report_summary_${name}.html"
-  if [[ ! `egrep -l "<td>|<tr>" ${SOURCE_PATH}/../results/report_detailed_${name}.html` ]]; then
+  if [[ ! `egrep -l "<td>|<tr>" ${SRC_PATH}/../results/report_detailed_${name}.html` ]]; then
     echo "FAILURE IN OUTPUT: Empty results in report_detailed_${name}.html"
     echo $calltoaction
   fi
-  if [[ `egrep -l "ERROR:" ${SOURCE_PATH}/../results/report_detailed_${name}.html` ]]; then
+  if [[ `egrep -l "ERROR:" ${SRC_PATH}/../results/report_detailed_${name}.html` ]]; then
     echo "FAILURE IN OUTPUT: Errors found in report_detailed_${name}.html"
     echo $calltoaction
   fi
@@ -113,14 +112,14 @@ publish ()
   label=$1 # Title Case
   name=${label,,} # lowercase
   # rename in workspace
-  rm -fr ${SOURCE_PATH}/../results
-  mkdir -p ${SOURCE_PATH}/../results/target/
-  mv ${SOURCE_PATH}/report_detailed.html ${SOURCE_PATH}/../results/report_detailed_${name}.html
-  mv ${SOURCE_PATH}/report_summary.html ${SOURCE_PATH}/../results/report_summary_${name}.html
-  rsync -aq ${SOURCE_PATH}/target/*.png ${SOURCE_PATH}/../results/target/
+  rm -fr ${SRC_PATH}/../results
+  mkdir -p ${SRC_PATH}/../results/target/
+  mv ${SRC_PATH}/report_detailed.html ${SRC_PATH}/../results/report_detailed_${name}.html
+  mv ${SRC_PATH}/report_summary.html ${SRC_PATH}/../results/report_summary_${name}.html
+  rsync -aq ${SRC_PATH}/target/*.png ${SRC_PATH}/../results/target/
 
   # publish now depends on having publish/rsync.sh fetched to workspace already -- see https://repository.jboss.org/nexus/content/groups/public/org/jboss/tools/releng/jbosstools-releng-publish/
-  . ${WORKSPACE}/sources/publish/rsync.sh -DESTINATION ${DESTINATION} -s ${SOURCE_PATH}/../results -t ${TARGET_PATH}/
+  . ${WORKSPACE}/sources/publish/rsync.sh -s ${SRC_PATH}/../results -t ${TRG_PATH}/
 
   # create links to html files (must be all on one line)
   DESCRIPTION="${DESCRIPTION}"'<li>'${label}' <a href="'${URL}'/report_detailed_'${name}'.html">Details</a>,\
@@ -130,19 +129,19 @@ publish ()
 #################################################################
 
 # do JBDS installs so we can compare them
-pushd ${SOURCE_PATH}
-. ${SOURCE_PATH}/install.jbds.sh -JBDS_INSTALLERS_LISTFILE ${JBDS_INSTALLERS_LISTFILE} -JAVA ${JAVA_HOME}/bin/java ${others}
+pushd ${SRC_PATH}
+. ${SRC_PATH}/install.jbds.sh -JBDS_INSTALLERS_LISTFILE ${JBDS_INSTALLERS_LISTFILE} -JAVA ${JAVA_HOME}/bin/java ${others}
 popd
 
 # clean up leftovers from previous builds
-pushd ${SOURCE_PATH}/; rm -f output.html product.html *report*.html; popd
+pushd ${SRC_PATH}/; rm -f output.html product.html *report*.html; popd
 
 # generate reports and publish them
 pushd ${WORKSPACE}
-  ${MVN} -f ${SOURCE_PATH}/pom.xml clean test -fn -Dmaven.repo.local=${WORKSPACE}/.repository -DexcludeVersions="${EXCLUDE_VERSIONS}" -DincludeVersions="${INCLUDE_VERSIONS}" \
+  ${MVN} -f ${SRC_PATH}/pom.xml clean test -fn -Dmaven.repo.local=${WORKSPACE}/.repository -DexcludeVersions="${EXCLUDE_VERSIONS}" -DincludeVersions="${INCLUDE_VERSIONS}" \
   -DexcludeIUs="${EXCLUDE_IUS}" -DincludeIUs="${INCLUDE_IUS}" \
   -DinstallationsDir="${INSTALL_FOLDER}" && publish Filtered && check_results Filtered
-  ${MVN} -f ${SOURCE_PATH}/pom.xml clean test -fn -Dmaven.repo.local=${WORKSPACE}/.repository -DexcludeVersions="${EXCLUDE_VERSIONS}" -DincludeVersions="${INCLUDE_VERSIONS}" \
+  ${MVN} -f ${SRC_PATH}/pom.xml clean test -fn -Dmaven.repo.local=${WORKSPACE}/.repository -DexcludeVersions="${EXCLUDE_VERSIONS}" -DincludeVersions="${INCLUDE_VERSIONS}" \
   -DexcludeIUs="${EXCLUDE_IUS}" -DincludeIUs=".*" \
   -DinstallationsDir="${INSTALL_FOLDER}" && publish All && check_results All
 popd
