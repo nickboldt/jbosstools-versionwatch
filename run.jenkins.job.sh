@@ -128,13 +128,14 @@ publish ()
 
 #################################################################
 
-# do JBDS installs so we can compare them
-pushd ${SRC_PATH}
-. ${SRC_PATH}/install.jbds.sh -JBDS_INSTALLERS_LISTFILE ${JBDS_INSTALLERS_LISTFILE} -JAVA ${JAVA_HOME}/bin/java ${others}
-popd
 
-# clean up leftovers from previous builds
-pushd ${SRC_PATH}/; rm -f output.html product.html *report*.html; popd
+pushd ${SRC_PATH}
+  # clean up leftovers from previous builds
+  rm -f output.html product.html *report*.html
+
+  # do JBDS installs so we can compare them
+  . ${SRC_PATH}/install.jbds.sh -JBDS_INSTALLERS_LISTFILE ${JBDS_INSTALLERS_LISTFILE} -JAVA ${JAVA_HOME}/bin/java ${others}
+popd
 
 # generate reports and publish them
 pushd ${WORKSPACE}
