@@ -98,11 +98,11 @@ check_results ()
   label=$1 # Title Case
   name=${label,,} # lowercase
   calltoaction=":: See ${label} Reports: ${URL}/report_detailed_${name}.html and ${URL}/report_summary_${name}.html"
-  if [[ ! `egrep -l "<td>|<tr>" ${SOURCE_PATH}/report_detailed_${name}.html` ]]; then
+  if [[ ! `egrep -l "<td>|<tr>" ${SOURCE_PATH}/../results/report_detailed_${name}.html` ]]; then
     echo "FAILURE IN OUTPUT: Empty results in report_detailed_${name}.html"
     echo $calltoaction
   fi
-  if [[ `egrep -l "ERROR:" ${SOURCE_PATH}/report_detailed_${name}.html` ]]; then
+  if [[ `egrep -l "ERROR:" ${SOURCE_PATH}/../results/report_detailed_${name}.html` ]]; then
     echo "FAILURE IN OUTPUT: Errors found in report_detailed_${name}.html"
     echo $calltoaction
   fi
@@ -113,13 +113,14 @@ publish ()
   label=$1 # Title Case
   name=${label,,} # lowercase
   # rename in workspace
-  mkdir -p ${SOURCE_PATH}/results/target/
-  mv ${SOURCE_PATH}/report_detailed.html ${SOURCE_PATH}/results/report_detailed_${name}.html
-  mv ${SOURCE_PATH}/report_summary.html ${SOURCE_PATH}/results/report_summary_${name}.html
-  rsync -aq ${SOURCE_PATH}/target/*.png ${SOURCE_PATH}/results/target/
+  rm -fr ${SOURCE_PATH}/../results
+  mkdir -p ${SOURCE_PATH}/../results/target/
+  mv ${SOURCE_PATH}/report_detailed.html ${SOURCE_PATH}/../results/report_detailed_${name}.html
+  mv ${SOURCE_PATH}/report_summary.html ${SOURCE_PATH}/../results/report_summary_${name}.html
+  rsync -aq ${SOURCE_PATH}/target/*.png ${SOURCE_PATH}/../results/target/
 
   # publish now depends on having publish/rsync.sh fetched to workspace already -- see https://repository.jboss.org/nexus/content/groups/public/org/jboss/tools/releng/jbosstools-releng-publish/
-  . ${WORKSPACE}/sources/publish/rsync.sh -DESTINATION ${DESTINATION} -s ${SOURCE_PATH}/results -t ${TARGET_PATH}/
+  . ${WORKSPACE}/sources/publish/rsync.sh -DESTINATION ${DESTINATION} -s ${SOURCE_PATH}/../results -t ${TARGET_PATH}/
 
   # create links to html files (must be all on one line)
   DESCRIPTION="${DESCRIPTION}"'<li>'${label}' <a href="'${URL}'/report_detailed_'${name}'.html">Details</a>,\
@@ -134,7 +135,7 @@ pushd ${SOURCE_PATH}
 popd
 
 # clean up leftovers from previous builds
-pushd ${SOURCE_PATH}; rm -f output.html product.html *report*.html; popd
+pushd ${SOURCE_PATH}/; rm -f output.html product.html *report*.html; popd
 
 # generate reports and publish them
 pushd ${WORKSPACE}
