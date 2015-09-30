@@ -112,7 +112,6 @@ publish ()
   label=$1 # Title Case
   name=${label,,} # lowercase
   # rename in workspace
-  rm -fr ${SRC_PATH}/../results
   mkdir -p ${SRC_PATH}/../results/target/
   mv ${SRC_PATH}/report_detailed.html ${SRC_PATH}/../results/report_detailed_${name}.html
   mv ${SRC_PATH}/report_summary.html ${SRC_PATH}/../results/report_summary_${name}.html
@@ -132,6 +131,7 @@ publish ()
 pushd ${SRC_PATH}
   # clean up leftovers from previous builds
   rm -f output.html product.html *report*.html
+  rm -fr ${SRC_PATH}/../results
 
   # do JBDS installs so we can compare them
   . ${SRC_PATH}/install.jbds.sh -JBDS_INSTALLERS_LISTFILE ${JBDS_INSTALLERS_LISTFILE} -JAVA ${JAVA_HOME}/bin/java ${others}
