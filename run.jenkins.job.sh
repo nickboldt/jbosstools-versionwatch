@@ -61,9 +61,8 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 FROM=${WORKSPACE}/sources
-SNAPSHOTS=tools@filemgmt.jboss.org:/downloads_htdocs/tools/${STREAM_NAME}/snapshots/builds/
-DEST=${SNAPSHOTS}/${JOB_NAME}
-URL=http://download.jboss.org/jbosstools/${STREAM_NAME}/snapshots/builds/${JOB_NAME}
+DEST=tools@filemgmt.jboss.org:/downloads_htdocs/tools/${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_ID}-B${BUILD_NUMBER}
+URL=http://download.jboss.org/jbosstools/${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_ID}-B${BUILD_NUMBER}
 
 # if not set commandline, use default upstream job based on this job's name -> devstudio.product_master, devstudio.product_8.0.luna, etc.
 if [[ ! ${UPSTREAM_JOB} ]]; then
@@ -97,7 +96,7 @@ check_results ()
 {
   label=$1 # Title Case
   name=${label,,} # lowercase
-  calltoaction=":: See ${label} Reports: ${URL}/${BUILD_ID}_B${BUILD_NUMBER}_report_detailed_${name}.html and ${URL}/${BUILD_ID}_B${BUILD_NUMBER}_report_summary_${name}.html"
+  calltoaction=":: See ${label} Reports: ${URL}/all/report_detailed_${name}.html and ${URL}/all/report_summary_${name}.html"
   if [[ ! `egrep -l "<td>|<tr>" ${FROM}/report_detailed_${name}.html` ]]; then
     echo "FAILURE IN OUTPUT: Empty results in report_detailed_${name}.html"
     echo $calltoaction
@@ -116,11 +115,12 @@ publish ()
   mv ${FROM}/report_detailed.html ${FROM}/report_detailed_${name}.html
   mv ${FROM}/report_summary.html ${FROM}/report_summary_${name}.html
   # publish now depends on having publish/rsync.sh fetched to workspace already -- see https://repository.jboss.org/nexus/content/groups/public/org/jboss/tools/releng/jbosstools-releng-publish/
-  . ${WORKSPACE}/sources/publish/rsync.sh -s ${FROM} -t ${DEST}/${BUILD_ID}-B${BUILD_NUMBER}/all/
+  . ${WORKSPACE}/sources/publish/rsync.sh -s ${FROM} -t ${DEST}/ -i "*report*"
+  . ${WORKSPACE}/sources/publish/rsync.sh -s ${FROM}/target -t ${DEST}/target
 
   # create links to html files (must be all on one line)
-  DESCRIPTION="${DESCRIPTION}"'<li>'${label}' <a href="'${URL}'/'${BUILD_ID}'_B'${BUILD_NUMBER}'_report_detailed_'${name}'.html">Details</a>,\
-   <a href="'${URL}'/'${BUILD_ID}'_B'${BUILD_NUMBER}'_report_summary_'${name}'.html">Summary</a></li>'
+  DESCRIPTION="${DESCRIPTION}"'<li>'${label}' <a href="'${URL}'/all/report_detailed_'${name}'.html">Details</a>,\
+   <a href="'${URL}'/all/report_summary_'${name}'.html">Summary</a></li>'
 }
 
 #################################################################
