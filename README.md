@@ -38,7 +38,7 @@ example:
 	git clone https://github.com/jpeterka/jbosstools-vwatch.git
 	cd vwatch
 	mvn clean package -DskipTests=true
-	java -jar "-Dvwatch.installationsDir=/opt/vw" "-Dvwatch.md5check" vwatch-0.4.1-SNAPSHOT-jar-with-dependencies.jar
+	java -jar "-Dvwatch.installationsDir=/opt/vw" "-Dvwatch.md5check" vwatch-0.4.100-SNAPSHOT-jar-with-dependencies.jar
 	
 ## Parameters ##
 **vwatch.loglevel** - specify log4j loglevel for vw logs  
