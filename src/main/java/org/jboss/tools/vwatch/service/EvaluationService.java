@@ -49,7 +49,7 @@ public class EvaluationService {
 			}
 			sortedList.add(min);
 			originalList.remove(min);
-			log.info("Sorted:" + min.getRootFolderName());
+			log.info("Sorted: " + min.getRootFolderName());
 		}
 
 		log.info("Original list: " + originalList.toString());

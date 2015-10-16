@@ -29,16 +29,32 @@ Version watch requires one folder containing several Eclipse installation, for e
   
     mvn -fae clean test [-Dparameter[=value]...]
         
-example:
+For example:
 
-    mvn clean test -Dvwatch.installationsDir="/opt/vw"
+    mvn clean test -Dvwatch.installationsDir="/tmp/vw"
       
 ### Executing as JAR application ###
 
-	git clone https://github.com/jpeterka/jbosstools-vwatch.git
-	cd vwatch
-	mvn clean package -DskipTests=true
-	java -jar "-Dvwatch.installationsDir=/opt/vw" "-Dvwatch.md5check" vwatch-0.4.100-SNAPSHOT-jar-with-dependencies.jar
+First, perform 2 or more JBDS installs using install.jbds.sh (or install by hand).
+
+You can also do a headless install using a script like this to invoke a console install into ${HOME}/jbdevstudio:
+
+    # move any existing install in ${HOME}/jbdevstudio first
+    if [[ -d ${HOME}/jbdevstudio ]]; then mv ${HOME}/jbdevstudio{,.PREVIOUS}; echo "Old JBDS install in ${HOME}/jbdevstudio moved to ${HOME}/jbdevstudio.PREVIOUS"; fi
+
+    # pipe "1" to the console install to accept the license terms and install into ${HOME}/jbdevstudio
+    echo 1 | java -jar jboss-devstudio-*installer*.jar -console; echo "Installed to ${HOME}/jbdevstudio"
+
+Once installed, you'll want to move those installs into whatever folder you set with `-Dvwatch.installationsDir` below.
+
+Next, use versionwatch to compare those installs:
+
+    # fetch sources and build it
+    git clone https://github.com/jbosstools/jbosstools-vwatch.git
+    cd vwatch; mvn clean package -DskipTests=true
+
+    # run it and capture a log
+    java -jar "-Dvwatch.installationsDir=/tmp/vw" "-Dvwatch.md5check" target/vwatch-*-jar-with-dependencies.jar | tee log.txt
 	
 ## Parameters ##
 **vwatch.loglevel** - specify log4j loglevel for vw logs  
@@ -47,7 +63,7 @@ default: all
 example: -Dvwatch.loglevel=6
 
 **vwatch.installationsDir** - directory where eclipse installations are located  
-default: /op/tvw  
+default: /opt/vw
 example: -Dvwatch.installationsDir=/opt/my_ide_container_dir
 
 **vwatch.product** - product for which the specific product report is generated
@@ -76,5 +92,3 @@ default: none;
 
 **vwatch.setLogLevel** - allows to set log level  
 default: Level.WARN (4)
->>>>>>> c8ba178... VersionWatch readme file updated
-

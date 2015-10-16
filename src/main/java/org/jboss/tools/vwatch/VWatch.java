@@ -91,7 +91,7 @@ public class VWatch {
 		String installationsDir = System.getProperty("vwatch.installationsDir");
 		if (installationsDir != null) {
 			repoPath = installationsDir;
-			log.info("Installations dir set to:" + repoPath);
+			log.info("Installations dir set to: " + repoPath);
 		}
 
 		String md5check= System.getProperty(Settings.md5checkVMProperty);

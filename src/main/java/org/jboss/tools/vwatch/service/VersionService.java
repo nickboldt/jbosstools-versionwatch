@@ -104,13 +104,11 @@ public class VersionService {
 	}
 
 	/**
-	 * Parse Version from installation folder name
-	 * @param i given installations
+	 * Parse Version from installation folder's absolute path
+	 * @param f given installation folder's absolute path
 	 * @return returns version instance
 	 */
-	public Version parseVersionFromInstallationFolder(Installation i) {
-
-		File f = new File(i.getRootFolderAbsolutePath());
+	public Version parseVersionFromInstallationFolder(File f) {
 		Version version = new Version();
 
 		// Find version
@@ -121,6 +119,7 @@ public class VersionService {
 
 		String[] split = group.split("\\.");
 		try {
+			//log.debug("Got major = " + split[0] + " => " + Integer.parseInt(split[0]));
 			version.setMajor(Integer.parseInt(split[0]));
 			version.setMinor(Integer.parseInt(split[1]));
 			version.setBuild(Integer.parseInt(split[2]));
@@ -129,8 +128,20 @@ public class VersionService {
 			log.error("Cannot convert versions to numbers" + e.getMessage());
 		}
 
+		//log.debug("Version = " + version.getMajor() + " . " + version.getMinor() + " . " + version.getBuild() + " . " + version.getQualifier());
 		return version;
 
+	}
+
+	/**
+	 * Parse Version from installation
+	 * @param i given installation
+	 * @return returns version instance
+	 */
+	public Version parseVersionFromInstallationFolder(Installation i) {
+
+		File f = new File(i.getRootFolderAbsolutePath());
+		return parseVersionFromInstallationFolder(f);
 	}
 
 	/**

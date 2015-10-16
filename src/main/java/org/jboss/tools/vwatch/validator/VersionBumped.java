@@ -8,7 +8,7 @@ public class VersionBumped extends PairValidator {
 
 	@Override
 	public boolean isValid(Bundle b1, Bundle b2) {
-		setIssueMessage("Version must be higher or at least equal");
+		setIssueMessage("Version must be greater than or equal");
 		boolean ret = vs.isVersionGreater(b1.getVersion(),
 				b2.getVersion());
 		if (ret)

@@ -247,7 +247,7 @@ public class BundleVersionReport extends Report {
 
 	private void printErrorLogHeader(String text) {
 		log.warn("----------------------------------------------------------------------------------------------------");
-		log.warn("Errors found in " + text + ":");
+		log.warn("Errors found in " + text + ": ");
 	}
 
 	private void printErrorLogInformation(Installation i, Bundle bundle) {

@@ -11,13 +11,14 @@ public class VersionDecreasedValidator extends PairValidator {
 	@Override
 	public boolean isValid(Bundle b1, Bundle b2) {
 		setSeverity(3);
-		setIssueMessage("Version must be higher or at least equal");
-		boolean ret = vs.isVersionGreaterOrEqual(b1.getVersion(),
-				b2.getVersion());
+		setIssueMessage("Version must be greater than or equal to previous when comparing " + b1.getFullName() + " :: "
+				+ b1.getFullVersions() + " to " + b2.getFullName() + " :: " + b2.getFullVersions());
+		boolean ret = vs.isVersionGreaterOrEqual(b1.getVersion(), b2.getVersion());
 		if (!ret) {
-            b2.setDecreased();
-            log.error("ERROR - Version must be higher or equal to it's predecessor");
-        }
+			b2.setDecreased();
+			log.error("ERROR - Version must be greater than or equal to previous when comparing " + b1.getFullName()
+					+ " :: " + b1.getFullVersions() + " to " + b2.getFullName() + " :: " + b2.getFullVersions());
+		}
 		return ret;
 	}
 

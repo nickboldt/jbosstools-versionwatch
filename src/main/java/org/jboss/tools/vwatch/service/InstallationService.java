@@ -105,8 +105,8 @@ public class InstallationService {
 		int bundleType = BundleType.NONE;
 		File f = new File(absolute);
 		if (!f.exists())  {
-			log.error("file doesn't exist");
-			throw new RuntimeException();
+			log.error("ERROR: File " + absolute + " doesn't exist!");
+			throw new RuntimeException("File " + absolute + " doesn't exist");
 		}
 
 		if (f.getAbsolutePath().toLowerCase().endsWith(".zip")) {
@@ -184,7 +184,7 @@ public class InstallationService {
 		bi.setPostfix("");
 
 		log.setLevel(Settings.getLogLevel());
-		log.debug(b.toString());
+		log.debug("For " + b.toString() + " : " + b.getName() + ", version = " + v.toString() + " ( " + v.toNumber() + " )");
 		
 		bi.setBundleType(bi.getBundleType() | bundleType);
 		b.getInstances().add(bi);

@@ -18,7 +18,7 @@ public class VersionDecreasedIssue extends Issue {
 	
 	public VersionDecreasedIssue(Bundle referenceBundle) {
 		this.sticky = true;
-		this.description = "Version must be higher";
+		this.description = "Version must be higher than " + referenceBundle.getFullVersions();
 		this.severity = Severity.ERROR;
 		this.referenceBundle = referenceBundle;
 		this.validation = new VersionDecreasedValidator();

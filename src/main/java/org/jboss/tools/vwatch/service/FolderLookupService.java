@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -71,7 +72,8 @@ public class FolderLookupService  {
 
 		File root = new File(repoPath);
 			File[] listFiles = root.listFiles();
-			Arrays.sort(listFiles);
+			// sort 9 < 10, not 9 > 1 
+			Arrays.sort(listFiles, new InstallationComparator());
 			for (File f : listFiles) {
 				if (f.isDirectory() && vs.isValid(f.getName())) {
 					Installation i = new Installation();					
@@ -83,13 +85,12 @@ public class FolderLookupService  {
 				}
 			}
 		return installations;
-		
 	}
 
 	private void setInstallationVersion(Installation i) {
 		VersionService vs = new VersionService();		
 		Version v = vs.parseVersionFromInstallationFolder(i);
-		i.setVersion(v);				
+		i.setVersion(v);			
 	}
 
 	/**
@@ -148,6 +149,16 @@ public class FolderLookupService  {
 		
 		// everything seems ok
 		return true;
+	}
+
+	// JBDS-3531 ensure that 10.0.0 is considered NEWER than 9.0.0, instead of doing a basic char-by-char compare, which results in 9 > 1
+	class InstallationComparator implements Comparator<File>{
+		@Override
+		public int compare(File f1, File f2) {
+			VersionService vs = new VersionService();
+			return vs.parseVersionFromInstallationFolder(f1).toNumber() -
+					vs.parseVersionFromInstallationFolder(f2).toNumber();
+		}
 	}
 }
 

@@ -88,7 +88,7 @@ public class BundleInstance {
 		String ret = "";
 		
 		for (Issue i : getIssues()) {
-			ret += i.getSeverity().toString() + ":" + i.getDescription() + "&#10;";
+			ret += i.getSeverity().toString() + ": " + i.getDescription() + "&#10;";
 		}
 		return ret;
 	}

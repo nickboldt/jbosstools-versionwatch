@@ -164,7 +164,7 @@ public class MD5Validator extends PairValidator {
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage());
-			throw new RuntimeException("Problem processing collection for MD5Validator:" + e);
+			throw new RuntimeException("Problem processing collection for MD5Validator: " + e);
 		}
 		return h;
 	}
