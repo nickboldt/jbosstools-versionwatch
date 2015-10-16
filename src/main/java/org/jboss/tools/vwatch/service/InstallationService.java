@@ -44,7 +44,7 @@ public class InstallationService {
 			public boolean accept(File dir, String name) {
 				
 				log.setLevel(Settings.getLogLevel());
-				// TODO should this be externalized to the includeVersions / excludeVersions properties?
+				// DO NOT use includeVersions/excludeVersions since those are for installation versions, not individual IUs
 				if (name.matches(".+\\d+\\.\\d+.\\d+.+")) {
 					log.info(name + " accepted");
 					return true;
@@ -184,7 +184,7 @@ public class InstallationService {
 		bi.setPostfix("");
 
 		log.setLevel(Settings.getLogLevel());
-		log.debug("For " + b.toString() + " : " + b.getName() + ", version = " + v.toString() + " ( " + v.toNumber() + " )");
+		//log.debug("For " + b.toString() + " : " + b.getName() + ", version = " + v.toString() + " ( " + v.toNumber() + " )");
 		
 		bi.setBundleType(bi.getBundleType() | bundleType);
 		b.getInstances().add(bi);
