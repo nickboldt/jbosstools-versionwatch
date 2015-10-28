@@ -114,8 +114,11 @@ public class VersionService {
 		// Find version
 		Pattern regex = Pattern.compile("\\d+\\.\\d+\\.\\d+");
 		Matcher regexMatcher = regex.matcher(f.getName());
-		regexMatcher.find();
-		String group = regexMatcher.group();
+		String group = "0.0.0";
+		if (regexMatcher.find())
+		{
+			group = regexMatcher.group();
+		}
 
 		String[] split = group.split("\\.");
 		try {

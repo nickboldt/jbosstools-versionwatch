@@ -53,8 +53,8 @@ public class ProductReport extends Report {
 	}
 
 	private String reportIssues(Class<? extends Issue> class1) {
-		Results r1 = searchIUsForIssues(class1, installation.getIUs(true));
-		Results r2 = searchIUsForIssues(class1, installation.getIUs(false));
+		Results r1 = searchIUsForIssues(class1, installation.getIUs(true), true);
+		Results r2 = searchIUsForIssues(class1, installation.getIUs(false), false);
 		int count = r1.getCount() + r2.getCount();
 		String text = r1.getHtml() + r2.getHtml();
 		IssueCounter.getInstance().setValue(class1,count);
@@ -62,18 +62,19 @@ public class ProductReport extends Report {
 		return count != 0 ? text : null; // "No issues found" + html.newLine() : text;
 	}
 
-	private Results searchIUsForIssues(Class<? extends Issue> class1, Set<Bundle> bundles) {
+	private Results searchIUsForIssues(Class<? extends Issue> class1, Set<Bundle> bundles, boolean feature) {
 		int counter = 0;
 		StringBuffer sb = new StringBuffer();
 		List<String> ignored = new ArrayList<String>();
 
 		sb.append("<table cellspacing=2 cellpadding=2>\n");
+		sb.append("<tr><td>" + (feature?"Feature":"Plugin") + "</td><td>Reference Version(s)</td><td>Problem</td></tr>\n");
 		for (Bundle b : bundles) {
 			List<Issue> issues = b.getIssues();
 			for (Issue i : issues) {
 				if (i.getClass().equals(class1)) {
 					String message = "<tr><td><b style='color:red'>" + i.getReferenceBundle().getName() + "</b></td><td>" +
-						i.getReferenceBundle().getFullVersions().replaceAll("<br/>", "</td><td>") + "</td></tr>\n";
+						i.getReferenceBundle().getFullVersions().replaceAll("<br/>", "</td><td>") + "</td><td>" + i.getDescription() + "</td></tr>\n";
 					if (i.getSeverity() == Severity.IGNORE) {
 						ignored.add(message);
 					} else { // if ignored, don't list with the non-ignored list
@@ -89,7 +90,7 @@ public class ProductReport extends Report {
 				sb.append(s.replaceAll("color:red", "color:blue"));
 			}
 		}
-		sb.append("</table>\n");
+		sb.append("</table><br/>\n");
 		Results r = new Results();
 		r.setCount(counter);
 		r.setHtml(sb.toString());
