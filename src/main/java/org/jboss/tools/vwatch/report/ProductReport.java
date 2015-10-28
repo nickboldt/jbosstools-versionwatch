@@ -73,8 +73,8 @@ public class ProductReport extends Report {
 			List<Issue> issues = b.getIssues();
 			for (Issue i : issues) {
 				if (i.getClass().equals(class1)) {
-					String message = "<tr><td><b style='color:red'>" + i.getReferenceBundle().getName() + "</b></td><td>" +
-						i.getReferenceBundle().getFullVersions().replaceAll("<br/>", "</td><td>") + "</td><td>" + i.getDescription() + "</td></tr>\n";
+					String message = "<tr><td><b style='color:red' nowrap>" + i.getReferenceBundle().getName() + "</b></td><td nowrap>" +
+						i.getReferenceBundle().getFullVersions().replaceAll("<br/>", "</td><td>") + "</td><td nowrap>" + i.getDescription() + "</td></tr>\n";
 					if (i.getSeverity() == Severity.IGNORE) {
 						ignored.add(message);
 					} else { // if ignored, don't list with the non-ignored list
