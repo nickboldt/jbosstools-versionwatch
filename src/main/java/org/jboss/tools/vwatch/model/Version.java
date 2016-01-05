@@ -45,6 +45,6 @@ public class Version {
 	}
 	public int toNumber() {
 		
-		return major*1000000 + minor*1000 + build;
+		return major*100000000 + minor*100000 + build;
 	}
 }
