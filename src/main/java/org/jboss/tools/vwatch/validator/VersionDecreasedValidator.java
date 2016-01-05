@@ -22,9 +22,10 @@ public class VersionDecreasedValidator extends PairValidator {
 		return ret;
 	}
 
+	// JBIDE-21391: report both reference version and current version in the error message
 	@Override
 	public void addIssue(Bundle b1, Bundle b2) {
-		Issue i = new VersionDecreasedIssue(b1);
+		Issue i = new VersionDecreasedIssue(b1,b2);
 		b2.getIssues().add(i);
 	}
 }

@@ -68,13 +68,13 @@ public class ProductReport extends Report {
 		List<String> ignored = new ArrayList<String>();
 
 		sb.append("<table cellspacing=2 cellpadding=2>\n");
-		sb.append("<tr><td>" + (feature?"Feature":"Plugin") + "</td><td>Reference Version(s)</td><td>Problem</td></tr>\n");
+		sb.append("<tr><td>" + (feature?"Feature":"Plugin") + "</td><td>Problem</td><td>Reference Version(s)</td></tr>\n");
 		for (Bundle b : bundles) {
 			List<Issue> issues = b.getIssues();
 			for (Issue i : issues) {
 				if (i.getClass().equals(class1)) {
-					String message = "<tr><td><b style='color:red' nowrap>" + i.getReferenceBundle().getName() + "</b></td><td nowrap>" +
-						i.getReferenceBundle().getFullVersions().replaceAll("<br/>", "</td><td>") + "</td><td nowrap>" + i.getDescription() + "</td></tr>\n";
+					String message = "<tr><td><b style='color:red' nowrap>" + i.getReferenceBundle().getName() + "</b></td><td nowrap>" + i.getDescription() + "</td><td nowrap>" +
+						i.getReferenceBundle().getFullVersions().replaceAll("<br/>", "</td><td>") + "</td></tr>\n";
 					if (i.getSeverity() == Severity.IGNORE) {
 						ignored.add(message);
 					} else { // if ignored, don't list with the non-ignored list

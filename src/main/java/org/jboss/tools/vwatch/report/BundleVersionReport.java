@@ -220,6 +220,11 @@ public class BundleVersionReport extends Report {
 
 					bw.append("<td " + c + " " + tooltip + ">" + getIcons(iuFromList)
 							+ iuFromList.getVersions().toString() + "</td>");
+
+					// JBIDE-21391 print the tooltip in the HTML too so the error is more easy to see + copy to a JIRA
+					if (tooltip.contains("ERROR")) {
+						bw.append("<td nowrap>"+tooltip.replaceAll("title=","").replaceAll("\"", "").replaceAll("&#10;", "<br/>")+"</td>");
+					}
 				} else {
 					bw.append("<td " + "title=\"IU not available in this version\" class=\"none\">N/A</td>");
 				}

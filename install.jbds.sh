@@ -35,10 +35,15 @@ usage() {
   echo "$0"
   echo "  [ -JAVA /qa/tools/opt/jdk1.8.0_last/bin/java ]"
   echo "  [ -BASE_URL http://www.qa.jboss.com/binaries/RHDS ]" 
-  echo "  [ -INSTALL_FOLDER /home/hudson/static_build_env/jbds/versionwatch/installations"
-  echo "  [ -JBDS_INSTALLER_NIGHTLY_FOLDER /path/to/9.0/snapshots/builds/devstudio.product_master/installer/"
-  echo "  [ -JBDS_INSTALLERS_LISTFILE /path/to/install.jbds.list.txt"
-  echo "  [ -JBDS_INSTALLERS /path/to/jbdevstudio-product-universal-7.0.0.Beta2-v20130626-0242-B345.jar, /path/to/jbdevstudio-product-universal-7.0.0.Beta1-v20130529-0631-B257.jar"
+  echo "  [ -INSTALL_FOLDER /home/hudson/static_build_env/jbds/versionwatch/installations ]"
+  echo "  [ -JBDS_INSTALLER_NIGHTLY_FOLDER /10.0/snapshots/builds/devstudio.product_master/latest/all/ ]"
+  echo "  [ -JBDS_INSTALLERS_LISTFILE /path/to/install.jbds.list.txt ]"
+  echo "  [ -JBDS_INSTALLERS \"/path/to/jboss-devstudio-9.1.0.Beta1-v20151216-2040-B197-installer-standalone.jar, /path/to/jboss-devstudio-10.0.0.Alpha1-v20160105-0547-B4563-installer-standalone.jar\" ]"
+  echo ""
+  echo "Example:"
+  echo "  ./install.jbds.sh -JAVA /opt/jdk1.8.0/bin/java -INSTALL_FOLDER /tmp/versionwatch-installations -JBDS_INSTALLERS_LISTFILE /dev/null \\"
+  echo "    -JBDS_INSTALLERS \"/tmp/jboss-devstudio-9.1.0.Beta1-v20151216-2040-B197-installer-standalone.jar, /tmp/jboss-devstudio-10.0.0.Alpha1-v20160105-0547-B4563-installer-standalone.jar\""
+
 }
 
 if [[ $# -eq 0 ]]; then
@@ -189,4 +194,6 @@ done
 
 echo "Now run this:"
 echo ""
-echo "mvn clean test -DinstallationsDir=${INSTALL_FOLDER} -DincludeIUs=\".*jboss.*\" -Dvwatch.md5check ${others}"
+echo "mvn clean test -DinstallationsDir=${INSTALL_FOLDER} -DincludeIUs=\".*jboss.*\" -Dvwatch.md5check ${others}; firefox report_*.html &"
+echo " - or, for a full report including upstream 3rd party IUs - "
+echo "mvn clean test -DinstallationsDir=${INSTALL_FOLDER} -DincludeIUs=\".*\" -Dvwatch.md5check ${others}; firefox report_*.html &"

@@ -35,7 +35,9 @@ For example:
       
 ### Executing as JAR application ###
 
-First, perform 2 or more JBDS installs using install.jbds.sh (or install by hand).
+#### Install JBDS
+
+First, perform 2 or more JBDS installs using `install.jbds.sh` (or install by hand).
 
 You can also do a headless install using a script like this to invoke a console install into ${HOME}/jbdevstudio:
 
@@ -45,7 +47,11 @@ You can also do a headless install using a script like this to invoke a console 
     # pipe "1" to the console install to accept the license terms and install into ${HOME}/jbdevstudio
     echo 1 | java -jar jboss-devstudio-*installer*.jar -console; echo "Installed to ${HOME}/jbdevstudio"
 
-Once installed, you'll want to move those installs into whatever folder you set with `-Dvwatch.installationsDir` below.
+NOTE: If you did a headless or by-hand install, move those installs into whatever folder you set with `-Dvwatch.installationsDir` below. 
+
+NOTE: If you used `install.jbds.sh` then the `-INSTALL_FOLDER` parameter should be used to set the folder into which you're installing. That folder should be the same as the one you specify with `-Dvwatch.installationsDir` below.
+
+#### Run versionwatch
 
 Next, use versionwatch to compare those installs:
 
@@ -55,7 +61,8 @@ Next, use versionwatch to compare those installs:
 
     # run it and capture a log
     java -jar "-Dvwatch.installationsDir=/tmp/vw" "-Dvwatch.md5check" target/vwatch-*-jar-with-dependencies.jar | tee log.txt
-	
+
+
 ## Parameters ##
 **vwatch.loglevel** - specify log4j loglevel for vw logs  
 values: 7 -debug, 6- info, 4- warn, 3 - error, 0 - fatal  
