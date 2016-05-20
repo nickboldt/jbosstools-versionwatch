@@ -19,9 +19,9 @@ UPSTREAM_JOB=""
 # CSV list of additional installer jars to use. Will also use list of installers in install.devstudio.list.txt.
 # If the target folder already exists, installation will be skipped.<br/>
 #  eg., /qa/services/http/binaries/RHDS/builds/stable/8.0.0.GA-build-core/jboss-devstudio-8.0.0.GA-v20141020-1042-B317-installer-standalone.jar
-JBDS_INSTALLERS=
+INSTALLERS=
 
-# Location where JBDS installations will be put
+# Location where devstudio installations will be put
 INSTALL_FOLDER=/home/hudson/static_build_env/devstudio/versionwatch/installations
 
 # To generate a report containing fewer bundles/features, set a regex that will match only those you want in the report, eg., .*(hibernate|jboss|xulrunner).* or match everything with .*
@@ -31,15 +31,15 @@ DESCRIPTION=""
 
 DESTINATION=tools@filemgmt.jboss.org:/downloads_htdocs/tools # or devstudio@filemgmt.jboss.org:/www_htdocs/devstudio or /qa/services/http/binaries/RHDS
 
-# file from which to pull a list of JBDS installers to install
-JBDS_INSTALLERS_LISTFILE=${SRC_PATH}/install.devstudio.list.txt
+# file from which to pull a list of devstudio installers to install
+INSTALLERS_LISTFILE=${SRC_PATH}/install.devstudio.list.txt
 
-# include and exclude patterns for which JBDS installs to use when producing the version diff report
+# include and exclude patterns for which devstudio installs to use when producing the version diff report
 INCLUDE_VERSIONS="\d+\.\d+\.\d+"
 EXCLUDE_VERSIONS=""
 INCLUDE_IUS=".*"
 EXCLUDE_IUS=""
-STREAM_NAME="10.0" # for JBDS, use 10.0, 9.0; for JBT, use neon, mars
+STREAM_NAME="10.0" # for devstudio, use 10.0, 9.0; for JBT, use neon, mars
 others=""
 
 # read commandline args
@@ -48,16 +48,16 @@ while [[ "$#" -gt 0 ]]; do
     '-JAVA_HOME') JAVA_HOME="$2"; shift 1;;
     '-M2_HOME') M2_HOME="$2"; shift 1;;
     '-UPSTREAM_JOB') UPSTREAM_JOB="$2"; shift 1;;
-    '-JBDS_INSTALLERS') JBDS_INSTALLERS="$2"; shift 1;;
+    '-INSTALLERS') INSTALLERS="$2"; shift 1;;
     '-INSTALL_FOLDER') INSTALL_FOLDER="$2"; shift 1;;
-    '-JBDS_INSTALLER_NIGHTLY_FOLDER') JBDS_INSTALLER_NIGHTLY_FOLDER="$2"; shift 1;;
-    '-JBDS_INSTALLERS_LISTFILE') JBDS_INSTALLERS_LISTFILE="$2"; shift 1;;
+    '-INSTALLER_NIGHTLY_FOLDER') INSTALLER_NIGHTLY_FOLDER="$2"; shift 1;;
+    '-INSTALLERS_LISTFILE') INSTALLERS_LISTFILE="$2"; shift 1;;
     '-INCLUDE_VERSIONS') INCLUDE_VERSIONS="$2"; shift 1;;
     '-EXCLUDE_VERSIONS') EXCLUDE_VERSIONS="$2"; shift 1;;
     '-INCLUDE_IUS') INCLUDE_IUS="$2"; shift 1;;
     '-EXCLUDE_IUS') EXCLUDE_IUS="$2"; shift 1;;
     '-STREAM_NAME') STREAM_NAME="$2"; shift 1;;
-    '-DESTINATION') DESTINATION="$2"; shift 1;; # override for JBDS publishing, eg., devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+    '-DESTINATION') DESTINATION="$2"; shift 1;; # override for devstudio publishing, eg., devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
     *) others="$others $1"; shift 0;;
   esac
   shift 1
@@ -68,9 +68,9 @@ TRG_PATH=${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_ID}-B${BUILD_NUMBER
 
 if [[ ${DESTINATION//tools@filemgmt.jboss.org} != ${DESTINATION} ]]; then # JBT public
   URL=http://download.jboss.org/jbosstools/${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_ID}-B${BUILD_NUMBER}
-elif [[ ${DESTINATION//devstudio@filemgmt.jboss.org} != ${DESTINATION} ]]; then # JBDS public
+elif [[ ${DESTINATION//devstudio@filemgmt.jboss.org} != ${DESTINATION} ]]; then # devstudio public
   URL=https://devstudio.redhat.com/${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_ID}-B${BUILD_NUMBER}
-elif [[ ${DESTINATION//binaries\/RHDS} != ${DESTINATION} ]]; then # JBDS internal
+elif [[ ${DESTINATION//binaries\/RHDS} != ${DESTINATION} ]]; then # devstudio internal
   URL=http://www.qa.jboss.com/binaries/RHDS/${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_ID}-B${BUILD_NUMBER}
 else # local file in workspace
   URL="ws/results";
@@ -85,17 +85,17 @@ if [[ ! ${UPSTREAM_JOB} ]]; then
   fi
 fi
 
-if [[ ! ${JBDS_INSTALLER_NIGHTLY_FOLDER} ]]; then
-  # Folder from which to install the latest nightly JBDS build, and run the version watch comparing this latest against
-  # the baseline JBDS_INSTALLERS. This will always overwrite if the version has changed since last time.
-  if [[ -f $(find /qa/services/http/binaries/RHDS/${STREAM_NAME}/snapshots/builds/${UPSTREAM_JOB}/latest/all/ -maxdepth 1 -type f -name "*installer*.jar" -a -not -name "*latest*"  | head -1) ]]; then # JBDS 9+
-    JBDS_INSTALLER_NIGHTLY_FOLDER=/qa/services/http/binaries/RHDS/${STREAM_NAME}/snapshots/builds/${UPSTREAM_JOB}/latest/all/
-  elif [[ -f $(find /qa/services/http/binaries/RHDS/builds/staging/${UPSTREAM_JOB}/installer/ -maxdepth 1 -type f -name "*installer*.jar" -a -not -name "*latest*" | head -1) ]]; then # JBDS 8 and earlier
-    JBDS_INSTALLER_NIGHTLY_FOLDER=/qa/services/http/binaries/RHDS/builds/staging/${UPSTREAM_JOB}/installer/
+if [[ ! ${INSTALLER_NIGHTLY_FOLDER} ]]; then
+  # Folder from which to install the latest nightly devstudio build, and run the version watch comparing this latest against
+  # the baseline INSTALLERS. This will always overwrite if the version has changed since last time.
+  if [[ -f $(find /qa/services/http/binaries/RHDS/${STREAM_NAME}/snapshots/builds/${UPSTREAM_JOB}/latest/all/ -maxdepth 1 -type f -name "*installer*.jar" -a -not -name "*latest*"  | head -1) ]]; then # devstudio 9+
+    INSTALLER_NIGHTLY_FOLDER=/qa/services/http/binaries/RHDS/${STREAM_NAME}/snapshots/builds/${UPSTREAM_JOB}/latest/all/
+  elif [[ -f $(find /qa/services/http/binaries/RHDS/builds/staging/${UPSTREAM_JOB}/installer/ -maxdepth 1 -type f -name "*installer*.jar" -a -not -name "*latest*" | head -1) ]]; then # devstudio 8 and earlier
+    INSTALLER_NIGHTLY_FOLDER=/qa/services/http/binaries/RHDS/builds/staging/${UPSTREAM_JOB}/installer/
   fi
 fi
-if [[ ! ${JBDS_INSTALLER_NIGHTLY_FOLDER} ]]; then
-  echo "[ERROR] No JBDS nightly folder defined in JBDS_INSTALLER_NIGHTLY_FOLDER = ${JBDS_INSTALLER_NIGHTLY_FOLDER}"
+if [[ ! ${INSTALLER_NIGHTLY_FOLDER} ]]; then
+  echo "[ERROR] No devstudio nightly folder defined in INSTALLER_NIGHTLY_FOLDER = ${INSTALLER_NIGHTLY_FOLDER}"
 fi
 
 # define globals in case they were overridden above
@@ -145,8 +145,8 @@ pushd ${SRC_PATH}
   rm -f output.html product.html *report*.html
   rm -fr ${SRC_PATH}/../results
 
-  # do JBDS installs so we can compare them
-  . ${SRC_PATH}/install.devstudio.sh -JBDS_INSTALLERS_LISTFILE ${JBDS_INSTALLERS_LISTFILE} -JAVA ${JAVA_HOME}/bin/java ${others}
+  # do devstudio installs so we can compare them
+  . ${SRC_PATH}/install.devstudio.sh -INSTALLERS_LISTFILE ${INSTALLERS_LISTFILE} -JAVA ${JAVA_HOME}/bin/java ${others}
 popd
 
 # generate reports and publish them

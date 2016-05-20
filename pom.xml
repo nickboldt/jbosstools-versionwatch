@@ -11,7 +11,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		
-		<!-- set installationsDir to the parent folder into which you have multiple versions of JBDS installed -->
+		<!-- set installationsDir to the parent folder into which you have multiple versions of devstudio installed -->
 		<!-- <installationsDir></installationsDir> -->
 		
 		<!--  filter which IUs to track/not track -->

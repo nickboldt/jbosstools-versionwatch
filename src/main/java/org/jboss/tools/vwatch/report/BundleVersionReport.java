@@ -111,7 +111,7 @@ public class BundleVersionReport extends Report {
 		}
 
 		log.warn("Report generated to file:///" + file.getAbsolutePath());
-		add("<h2>JBDS Version Watch - Detailed Report: " + installations.get(0).getRootFolderName() + "</h2>");
+		add("<h2>devstudio version watch - detailed report: " + installations.get(0).getRootFolderName() + "</h2>");
 	}
 
 	private void generateTable(StringBuilder bw, List<Installation> installations, boolean feature, String includeIUs,

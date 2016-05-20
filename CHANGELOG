@@ -6,7 +6,7 @@ Version 0.4.100
 * JBDS-3887 s/jbds/devstudio/g
 * JBIDE-21404 versionwatch thinks that that 1.1.0 < 1.0.2000
 * JBIDE-21391 improve reporting so both ref bundle and current bundle versions appear in error messages; fix doc/examples for running locally
-* JBDS-3531 Support for notion of JBDS 10 > JBDS 9 (rather than 1 < 9)
+* JBDS-3531 Support for notion of devstudio 10 > devstudio 9 (rather than 1 < 9)
 
 Version 0.4.1
 * Version bumped indicator added

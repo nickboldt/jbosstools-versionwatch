@@ -35,7 +35,7 @@ public class FolderLookupService  {
 		if (!dirExists(repoPath)) ls.logAndExit(repoPath + " doesn't exist or is not directory");   
 					
 		// load folders list
-		installations = getValidJBDSFolders(repoPath);	
+		installations = getValidInstallFolders(repoPath);	
 		if (installations.size() == 0) ls.logAndExit(repoPath + " no installation folders found");
 		
 		// load installations content
@@ -61,7 +61,7 @@ public class FolderLookupService  {
 	 * @param repoPath
 	 * @return
 	 */
-	private List<Installation> getValidJBDSFolders(String repoPath) {
+	private List<Installation> getValidInstallFolders(String repoPath) {
 
 		List<Installation> installations = new ArrayList<Installation>();
 		
@@ -151,7 +151,7 @@ public class FolderLookupService  {
 		return true;
 	}
 
-	// JBDS-3531 ensure that 10.0.0 is considered NEWER than 9.0.0, instead of doing a basic char-by-char compare, which results in 9 > 1
+	// ensure that 10.0.0 is considered NEWER than 9.0.0, instead of doing a basic char-by-char compare, which results in 9 > 1
 	class InstallationComparator implements Comparator<File>{
 		@Override
 		public int compare(File f1, File f2) {

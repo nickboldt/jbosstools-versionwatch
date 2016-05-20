@@ -35,14 +35,14 @@ For example:
       
 ### Executing as JAR application ###
 
-#### Install JBDS
+#### Install devstudio
 
-First, perform 2 or more JBDS installs using `install.devstudio.sh` (or install by hand).
+First, perform 2 or more devstudio installs using `install.devstudio.sh` (or install by hand).
 
 You can also do a headless install using a script like this to invoke a console install into ${HOME}/jbdevstudio:
 
     # move any existing install in ${HOME}/jbdevstudio first
-    if [[ -d ${HOME}/jbdevstudio ]]; then mv ${HOME}/jbdevstudio{,.PREVIOUS}; echo "Old JBDS install in ${HOME}/jbdevstudio moved to ${HOME}/jbdevstudio.PREVIOUS"; fi
+    if [[ -d ${HOME}/jbdevstudio ]]; then mv ${HOME}/jbdevstudio{,.PREVIOUS}; echo "Old devstudio install in ${HOME}/jbdevstudio moved to ${HOME}/jbdevstudio.PREVIOUS"; fi
 
     # pipe "1" to the console install to accept the license terms and install into ${HOME}/jbdevstudio
     echo 1 | java -jar jboss-devstudio-*installer*.jar -console; echo "Installed to ${HOME}/jbdevstudio"
