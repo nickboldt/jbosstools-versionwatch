@@ -16,13 +16,13 @@ MVN=${M2_HOME}/bin/mvn
 # default upstream job = devstudio.product_master, devstudio.product_8.0.luna, etc.
 UPSTREAM_JOB=""
 
-# CSV list of additional installer jars to use. Will also use list of installers in install.jbds.list.txt.
+# CSV list of additional installer jars to use. Will also use list of installers in install.devstudio.list.txt.
 # If the target folder already exists, installation will be skipped.<br/>
 #  eg., /qa/services/http/binaries/RHDS/builds/stable/8.0.0.GA-build-core/jboss-devstudio-8.0.0.GA-v20141020-1042-B317-installer-standalone.jar
 JBDS_INSTALLERS=
 
 # Location where JBDS installations will be put
-INSTALL_FOLDER=/home/hudson/static_build_env/jbds/versionwatch/installations
+INSTALL_FOLDER=/home/hudson/static_build_env/devstudio/versionwatch/installations
 
 # To generate a report containing fewer bundles/features, set a regex that will match only those you want in the report, eg., .*(hibernate|jboss|xulrunner).* or match everything with .*
 INCLUDE_IUS=".*(hibernate|jboss|xulrunner).*"
@@ -32,7 +32,7 @@ DESCRIPTION=""
 DESTINATION=tools@filemgmt.jboss.org:/downloads_htdocs/tools # or devstudio@filemgmt.jboss.org:/www_htdocs/devstudio or /qa/services/http/binaries/RHDS
 
 # file from which to pull a list of JBDS installers to install
-JBDS_INSTALLERS_LISTFILE=${SRC_PATH}/install.jbds.list.txt
+JBDS_INSTALLERS_LISTFILE=${SRC_PATH}/install.devstudio.list.txt
 
 # include and exclude patterns for which JBDS installs to use when producing the version diff report
 INCLUDE_VERSIONS="\d+\.\d+\.\d+"
@@ -146,7 +146,7 @@ pushd ${SRC_PATH}
   rm -fr ${SRC_PATH}/../results
 
   # do JBDS installs so we can compare them
-  . ${SRC_PATH}/install.jbds.sh -JBDS_INSTALLERS_LISTFILE ${JBDS_INSTALLERS_LISTFILE} -JAVA ${JAVA_HOME}/bin/java ${others}
+  . ${SRC_PATH}/install.devstudio.sh -JBDS_INSTALLERS_LISTFILE ${JBDS_INSTALLERS_LISTFILE} -JAVA ${JAVA_HOME}/bin/java ${others}
 popd
 
 # generate reports and publish them

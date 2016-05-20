@@ -1,0 +1,2 @@
+https://devstudio.redhat.com/static/9.0/stable/builds/devstudio-9.1.0.GA-build-product/latest/all/jboss-devstudio-9.1.0.latest-installer-standalone.jar,
+/qa/services/http/binaries/RHDS/builds/stable/8.1.0.GA-build-core/jboss-devstudio-8.1.0.GA-installer-standalone.jar
