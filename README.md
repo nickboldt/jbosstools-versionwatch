@@ -37,7 +37,7 @@ For example:
 
 #### Install JBDS
 
-First, perform 2 or more JBDS installs using `install.jbds.sh` (or install by hand).
+First, perform 2 or more JBDS installs using `install.devstudio.sh` (or install by hand).
 
 You can also do a headless install using a script like this to invoke a console install into ${HOME}/jbdevstudio:
 
@@ -49,7 +49,7 @@ You can also do a headless install using a script like this to invoke a console 
 
 NOTE: If you did a headless or by-hand install, move those installs into whatever folder you set with `-Dvwatch.installationsDir` below. 
 
-NOTE: If you used `install.jbds.sh` then the `-INSTALL_FOLDER` parameter should be used to set the folder into which you're installing. That folder should be the same as the one you specify with `-Dvwatch.installationsDir` below.
+NOTE: If you used `install.devstudio.sh` then the `-INSTALL_FOLDER` parameter should be used to set the folder into which you're installing. That folder should be the same as the one you specify with `-Dvwatch.installationsDir` below.
 
 #### Run versionwatch
 

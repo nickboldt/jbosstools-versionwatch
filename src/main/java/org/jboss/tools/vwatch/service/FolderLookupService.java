@@ -128,7 +128,7 @@ public class FolderLookupService  {
 		if (arrayList.contains("studio")) eclipseFolder = "studio";
 		
 		if (eclipseFolder.equals("")) {		
-			log.error("Folder " + installation.getRootFolderAbsolutePath() + " isn't valid eclipse/jbds installation (doesn't contain eclipse or studio folder");
+			log.error("Folder " + installation.getRootFolderAbsolutePath() + " isn't valid eclipse/devstudio installation (doesn't contain eclipse or studio folder");
 			return false;
 		}
 		installation.setEclipseFolder(eclipseFolder);
