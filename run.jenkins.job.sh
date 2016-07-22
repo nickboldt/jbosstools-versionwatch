@@ -63,15 +63,16 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
+BUILD_TIMESTAMP=`date -u +%Y-%m-%d_%H-%M-%S`
 SRC_PATH=${WORKSPACE}/sources
-TRG_PATH=${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_ID}-B${BUILD_NUMBER}
+TRG_PATH=${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_TIMESTAMP}-B${BUILD_NUMBER}
 
 if [[ ${DESTINATION//tools@filemgmt.jboss.org} != ${DESTINATION} ]]; then # JBT public
-  URL=http://download.jboss.org/jbosstools/${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_ID}-B${BUILD_NUMBER}
+  URL=http://download.jboss.org/jbosstools/${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_TIMESTAMP}-B${BUILD_NUMBER}
 elif [[ ${DESTINATION//devstudio@filemgmt.jboss.org} != ${DESTINATION} ]]; then # devstudio public
-  URL=https://devstudio.redhat.com/${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_ID}-B${BUILD_NUMBER}
+  URL=https://devstudio.redhat.com/${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_TIMESTAMP}-B${BUILD_NUMBER}
 elif [[ ${DESTINATION//binaries\/RHDS} != ${DESTINATION} ]]; then # devstudio internal
-  URL=http://www.qa.jboss.com/binaries/RHDS/${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_ID}-B${BUILD_NUMBER}
+  URL=http://www.qa.jboss.com/binaries/RHDS/${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_TIMESTAMP}-B${BUILD_NUMBER}
 else # local file in workspace
   URL="ws/results";
 fi
