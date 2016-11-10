@@ -91,12 +91,16 @@ if [[ ! ${INSTALLER_NIGHTLY_FOLDER} ]]; then
   # the baseline INSTALLERS. This will always overwrite if the version has changed since last time.
   if [[ -f $(find /qa/services/http/binaries/RHDS/${STREAM_NAME}/snapshots/builds/${UPSTREAM_JOB}/latest/all/ -maxdepth 1 -type f -name "*installer*.jar" -a -not -name "*latest*"  | head -1) ]]; then # devstudio 9+
     INSTALLER_NIGHTLY_FOLDER=/qa/services/http/binaries/RHDS/${STREAM_NAME}/snapshots/builds/${UPSTREAM_JOB}/latest/all/
+    echo "[INFO] [1] use INSTALLER_NIGHTLY_FOLDER = ${INSTALLER_NIGHTLY_FOLDER}"
   elif [[ -f $(find /qa/services/http/binaries/RHDS/builds/staging/${UPSTREAM_JOB}/installer/ -maxdepth 1 -type f -name "*installer*.jar" -a -not -name "*latest*" | head -1) ]]; then # devstudio 8 and earlier
     INSTALLER_NIGHTLY_FOLDER=/qa/services/http/binaries/RHDS/builds/staging/${UPSTREAM_JOB}/installer/
+    echo "[INFO] [2] use INSTALLER_NIGHTLY_FOLDER = ${INSTALLER_NIGHTLY_FOLDER}"
   fi
 fi
 if [[ ! ${INSTALLER_NIGHTLY_FOLDER} ]]; then
   echo "[ERROR] No devstudio nightly folder defined in INSTALLER_NIGHTLY_FOLDER = ${INSTALLER_NIGHTLY_FOLDER}"
+else
+  echo "[INFO] [0] use INSTALLER_NIGHTLY_FOLDER = ${INSTALLER_NIGHTLY_FOLDER}"
 fi
 
 # define globals in case they were overridden above
@@ -130,7 +134,8 @@ publish ()
   mv ${SRC_PATH}/report_summary.html ${SRC_PATH}/../results/report_summary_${name}.html
   rsync -aq ${SRC_PATH}/target/*.png ${SRC_PATH}/../results/target/
 
-  # publish now depends on having publish/rsync.sh fetched to workspace already -- see https://repository.jboss.org/nexus/content/groups/public/org/jboss/tools/releng/jbosstools-releng-publish/
+  # publish now depends on having publish/rsync.sh fetched to workspace already -- see 
+  # https://repository.jboss.org/nexus/content/groups/public/org/jboss/tools/releng/jbosstools-releng-publish/
   . ${WORKSPACE}/sources/publish/rsync.sh -s ${SRC_PATH}/../results -t ${TRG_PATH}/ -DESTINATION ${DESTINATION}
 
   # create links to html files (must be all on one line)
@@ -147,16 +152,17 @@ pushd ${SRC_PATH}
   rm -fr ${SRC_PATH}/../results
 
   # do devstudio installs so we can compare them
-  . ${SRC_PATH}/install.devstudio.sh -INSTALLERS_LISTFILE ${INSTALLERS_LISTFILE} -JAVA ${JAVA_HOME}/bin/java ${others}
+  . ${SRC_PATH}/install.devstudio.sh -INSTALLERS_LISTFILE ${INSTALLERS_LISTFILE} -INSTALLER_NIGHTLY_FOLDER ${INSTALLER_NIGHTLY_FOLDER} \
+    -JAVA ${JAVA_HOME}/bin/java ${others}
 popd
 
 # generate reports and publish them
 pushd ${WORKSPACE}
-  ${MVN} -f ${SRC_PATH}/pom.xml clean test -fn -Dmaven.repo.local=${WORKSPACE}/.repository -DexcludeVersions="${EXCLUDE_VERSIONS}" -DincludeVersions="${INCLUDE_VERSIONS}" \
-  -DexcludeIUs="${EXCLUDE_IUS}" -DincludeIUs="${INCLUDE_IUS}" \
+  ${MVN} -f ${SRC_PATH}/pom.xml clean test -fn -Dmaven.repo.local=${WORKSPACE}/.repository -DexcludeVersions="${EXCLUDE_VERSIONS}" \
+  -DincludeVersions="${INCLUDE_VERSIONS}" -DexcludeIUs="${EXCLUDE_IUS}" -DincludeIUs="${INCLUDE_IUS}" \
   -DinstallationsDir="${INSTALL_FOLDER}" && publish Filtered && check_results Filtered
-  ${MVN} -f ${SRC_PATH}/pom.xml clean test -fn -Dmaven.repo.local=${WORKSPACE}/.repository -DexcludeVersions="${EXCLUDE_VERSIONS}" -DincludeVersions="${INCLUDE_VERSIONS}" \
-  -DexcludeIUs="${EXCLUDE_IUS}" -DincludeIUs=".*" \
+  ${MVN} -f ${SRC_PATH}/pom.xml clean test -fn -Dmaven.repo.local=${WORKSPACE}/.repository -DexcludeVersions="${EXCLUDE_VERSIONS}" \
+  -DincludeVersions="${INCLUDE_VERSIONS}" -DexcludeIUs="${EXCLUDE_IUS}" -DincludeIUs=".*" \
   -DinstallationsDir="${INSTALL_FOLDER}" && publish All && check_results All
 popd
 
