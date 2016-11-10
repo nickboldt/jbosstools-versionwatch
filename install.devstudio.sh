@@ -143,7 +143,7 @@ installDevstudio() {
 if [[ ${INSTALLER_NIGHTLY_FOLDER} ]] && [[ -d ${INSTALLER_NIGHTLY_FOLDER} ]]; then 
   # install the latest nightly, caching the last version used in devstudio-8.0.2.GA/version.txt so we only ever have one nightly at a time
   # new query method for devstudio 8/9, eg., for jboss-devstudio-8.0.0.GA-v20141020-1042-B317-installer-standalone.jar
-  for i in `find ${INSTALLER_NIGHTLY_FOLDER} -name "jboss-devstudio-*-installer-standalone.jar" -a -not -name "*latest*"`; do
+  for i in `find ${INSTALLER_NIGHTLY_FOLDER} -name "*devstudio-*-installer-standalone.jar" -a -not -name "*latest*"`; do
     ver=${i##*-devstudio-}; ver=${ver%%-installer-standalone.jar}; # 8.0.0.GA-v20141020-1042-B317
     f=${i##*-devstudio-}; f=${f%%-*}; # 8.0.0.GA
     LATEST=${INSTALL_FOLDER}/devstudio-${f}/version.txt
