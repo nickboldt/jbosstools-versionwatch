@@ -111,8 +111,6 @@ fi
 if [[ ! ${INSTALLER_NIGHTLY_FOLDER} ]]; then
   # Folder from which to install the latest nightly devstudio build, and run the version watch comparing this latest against
   # the baseline INSTALLERS. This will always overwrite if the version has changed since last time.
-
-
   if [[ -f $(find ${HOME}/RHDS-ssh/${STREAM_NAME}/snapshots/builds/${UPSTREAM_JOB}/latest/all/ -maxdepth 1 -type f -name "*installer*.jar" -a -not -name "*latest*"  | head -1) ]]; then # devstudio 9+
     INSTALLER_NIGHTLY_FOLDER=${HOME}/RHDS-ssh/${STREAM_NAME}/snapshots/builds/${UPSTREAM_JOB}/latest/all/
     echo "[INFO] [1] use INSTALLER_NIGHTLY_FOLDER = ${INSTALLER_NIGHTLY_FOLDER}"
