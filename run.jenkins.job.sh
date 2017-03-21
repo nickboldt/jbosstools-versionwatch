@@ -12,7 +12,9 @@ if [[ ! ${NATIVE_TOOLS} ]] && [[ -d /qa/tools/opt ]]; then NATIVE_TOOLS=/qa/tool
 if [[ ! ${JAVA_HOME} ]] && [[ ${NATIVE_TOOLS} ]]; then JAVA_HOME=${NATIVE_TOOLS}/jdk1.8.0_last; fi
 
 # where is maven?
-M2_HOME=/qa/tools/opt/apache-maven-3.2.5 # don't use NATIVE_TOOLS because it might be /qa/tools/opt/amd64 and there's no /qa/tools/opt/amd64/apache-maven-3.1.1
+M2_HOME=/qa/tools/opt/apache-maven-3.3.9 # don't use NATIVE_TOOLS because it might be /qa/tools/opt/amd64 and there's no /qa/tools/opt/amd64/apache-maven-3.3.9
+if [[ ! -f ${M2_HOME}/bin/mvn ]]; then echo "[ERROR] Can't find mvn in ${M2_HOME}"; exit 1; fi
+
 PATH=$PATH:$M2_HOME/bin:$JAVA_HOME/bin
 MVN=${M2_HOME}/bin/mvn
 
