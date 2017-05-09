@@ -185,6 +185,9 @@ pushd ${SRC_PATH}
     -INSTALL_FOLDER ${INSTALL_FOLDER} -JAVA ${JAVA_HOME}/bin/java ${others}
 popd
 
+# wipe any old builds
+rm -fr ${INSTALL_FOLDER}/../devstudio-*_PREV 2>&1 1>/dev/null &
+
 # generate reports and publish them
 pushd ${WORKSPACE}
   ${MVN} -f ${SRC_PATH}/pom.xml clean

@@ -159,8 +159,11 @@ if [[ ${INSTALLER_NIGHTLY_FOLDER} ]] && [[ -d ${INSTALLER_NIGHTLY_FOLDER} ]]; th
     if [[ -d ${INSTALL_FOLDER}/devstudio-${f} ]] && [[ -f ${LATEST} ]] && [[ `cat ${LATEST}` == $ver ]]; then 
       echo "Existing devstudio install in ${INSTALL_FOLDER}/devstudio-${f} (${ver})"
     else
-      # wipe existing installation
-      if [[ ${f} ]] && [[ -d ${INSTALL_FOLDER}/devstudio-${f} ]]; then rm -fr ${INSTALL_FOLDER}/devstudio-${f}; fi
+      # move existing installation for later deletion
+      if [[ ${f} ]] && [[ -d ${INSTALL_FOLDER}/devstudio-${f} ]]; then
+        mv ${INSTALL_FOLDER}/devstudio-${f} ${INSTALL_FOLDER}/../devstudio-${f}_PREV
+        rm -fr ${INSTALL_FOLDER}/../devstudio-*_PREV 2>&1 1>/dev/null &
+      fi
       # echo "Install devstudio ${f} (${ver}) to ${INSTALL_FOLDER}/devstudio-${f} ..."
       installDevstudio ${f} ${i}
       echo "${ver}" > ${LATEST}
