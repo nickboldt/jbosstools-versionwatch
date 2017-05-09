@@ -29,7 +29,10 @@ INSTALL_FOLDER=/home/hudson/static_build_env/devstudio/versionwatch/installation
 INSTALLERS_LISTFILE=`pwd`/install.devstudio.list.txt
 
 # BASE_URL :: if path to installer is not found locally, set a base URL instead from which to download them; default: https://devstudio.redhat.com
-BASE_URL=https://devstudio.redhat.com
+BASE_URL=https://devstudio.redhat.com # or wonka?
+
+# location for downloaded installers
+TMPDIR=/tmp
 
 usage() {
   echo "$0"
@@ -60,6 +63,7 @@ while [[ "$#" -gt 0 ]]; do
     '-INSTALLER_NIGHTLY_FOLDER') INSTALLER_NIGHTLY_FOLDER="$2"; shift 1;; # Folder from which to install the latest nightly devstudio build
     '-INSTALLERS') INSTALLERS="$2"; shift 1;; 
     '-INSTALLERS_LISTFILE') INSTALLERS_LISTFILE="$2"; shift 1;; # path to install.devstudio.list.txt or other file with CSV or one-per-line list of devstudio installers to run
+    '-TMPDIR') TMPDIR="$2"; shift 1;; # path to where we're temporarily storing installers (eg., in WORKSPACE/devstudio_installers)
     *) others="$others $1"; shift 0;;
     esac
   shift 1
@@ -98,9 +102,6 @@ if [[ ! -d ${INSTALL_FOLDER} ]]; then
   echo "Warning: INSTALL_FOLDER = ${INSTALL_FOLDER} does not exist, so creating it."
   mkdir -p ${INSTALL_FOLDER}
 fi
-
-# location for downloaded installers
-TMPDIR=/tmp
 
 # define install config file
 installDevstudio() {
