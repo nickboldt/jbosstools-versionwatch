@@ -16,7 +16,7 @@
 # INSTALL_FOLDER :: Location where devstudio installations will be put; default: /home/hudson/static_build_env/devstudio/versionwatch/installations
 INSTALL_FOLDER=/home/hudson/static_build_env/devstudio/versionwatch/installations
 
-# INSTALLER_NIGHTLY_FOLDER :: /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_master/installer/
+# INSTALLER_NIGHTLY_FOLDER :: /qa/services/http/binaries/RHDS/11/snapshots/builds/devstudio.product_master/all/
 # Folder from which to install the latest nightly devstudio build, and run the version watch comparing this latest against
 # the baseline INSTALLERS. This will always overwrite if the version has changed since last time.
 

@@ -122,9 +122,6 @@ for mnt in RHDS JBDS; do
     if [[ -f $(find ${WORKSPACE}/${mnt}-ssh/${STREAM_NAME}/snapshots/builds/${UPSTREAM_JOB}/latest/all/ -maxdepth 1 -type f -name "*installer*.jar" -a -not -name "*latest*"  | head -1) ]]; then # devstudio 9+
       INSTALLER_NIGHTLY_FOLDER=${WORKSPACE}/${mnt}-ssh/${STREAM_NAME}/snapshots/builds/${UPSTREAM_JOB}/latest/all/
       echo "[INFO] [1] use INSTALLER_NIGHTLY_FOLDER = ${INSTALLER_NIGHTLY_FOLDER}"
-    elif [[ -f $(find ${WORKSPACE}/${mnt}-ssh/builds/staging/${UPSTREAM_JOB}/installer/ -maxdepth 1 -type f -name "*installer*.jar" -a -not -name "*latest*" | head -1) ]]; then # devstudio 8 and earlier
-      INSTALLER_NIGHTLY_FOLDER=${WORKSPACE}/${mnt}-ssh/builds/staging/${UPSTREAM_JOB}/installer/
-      echo "[INFO] [2] use INSTALLER_NIGHTLY_FOLDER = ${INSTALLER_NIGHTLY_FOLDER}"
     fi
   fi
 done
