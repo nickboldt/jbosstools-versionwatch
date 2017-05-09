@@ -24,7 +24,7 @@ UPSTREAM_JOB=""
 # CSV list of additional installer jars to use. Will also use list of installers in install.devstudio.list.txt.
 # If the target folder already exists, installation will be skipped.<br/>
 #  eg., ${WORKSPACE}/RHDS-ssh/builds/stable/8.0.0.GA-build-core/jboss-devstudio-8.0.0.GA-v20141020-1042-B317-installer-standalone.jar
-INSTALLERS=
+INSTALLERS=""
 
 # attempt to ssh mount the RHDS  mount
 JBDS=devstudio@10.5.105.197:/www_htdocs/devstudio
@@ -77,7 +77,7 @@ while [[ "$#" -gt 0 ]]; do
     '-JAVA_HOME') JAVA_HOME="$2"; shift 1;;
     '-M2_HOME') M2_HOME="$2"; shift 1;;
     '-UPSTREAM_JOB') UPSTREAM_JOB="$2"; shift 1;;
-    '-INSTALLERS') INSTALLERS="$2"; shift 1;;
+    '-INSTALLERS') INSTALLERS="-INSTALLERS \"$2\""; shift 1;;
     '-INSTALL_FOLDER') INSTALL_FOLDER="$2"; shift 1;;
     '-INSTALLER_NIGHTLY_FOLDER') INSTALLER_NIGHTLY_FOLDER="$2"; shift 1;;
     '-INSTALLERS_LISTFILE') INSTALLERS_LISTFILE="$2"; shift 1;;
@@ -124,10 +124,17 @@ for mnt in RHDS JBDS; do
     fi
   fi
 done
-if [[ ! ${INSTALLER_NIGHTLY_FOLDER} ]]; then
-  echo "[ERROR] No devstudio nightly folder defined in INSTALLER_NIGHTLY_FOLDER = ${INSTALLER_NIGHTLY_FOLDER}"
+if [[ ! ${INSTALLER_NIGHTLY_FOLDER} ]] && [[ ! ${INSTALLERS} ]]; then
+  echo "[WARNING] No devstudio CI folder defined in INSTALLER_NIGHTLY_FOLDER = ${INSTALLER_NIGHTLY_FOLDER}"
+  echo "[WARNING] No devstudio CI build defined in INSTALLERS = ${INSTALLERS}"
+  echo "[WARNING] So, versionwatch will only compare previous installs, not the latest CI."
 else
-  echo "[INFO] [0] use INSTALLER_NIGHTLY_FOLDER = ${INSTALLER_NIGHTLY_FOLDER}"
+  if [[ ${INSTALLER_NIGHTLY_FOLDER} ]]; then
+    echo "[INFO] [0] use INSTALLER_NIGHTLY_FOLDER = ${INSTALLER_NIGHTLY_FOLDER}"
+  fi
+  if [[ ${INSTALLERS} ]]; then
+    echo "[INFO] [1] use INSTALLERS = ${INSTALLERS}"
+  fi
 fi
 
 # define globals in case they were overridden above
@@ -174,7 +181,7 @@ publish ()
 
 pushd ${SRC_PATH}
   # do devstudio installs so we can compare them
-  . ${SRC_PATH}/install.devstudio.sh -INSTALLERS_LISTFILE ${INSTALLERS_LISTFILE} -INSTALLER_NIGHTLY_FOLDER ${INSTALLER_NIGHTLY_FOLDER} \
+  . ${SRC_PATH}/install.devstudio.sh -INSTALLERS_LISTFILE ${INSTALLERS_LISTFILE} ${INSTALLERS} -INSTALLER_NIGHTLY_FOLDER ${INSTALLER_NIGHTLY_FOLDER} \
     -INSTALL_FOLDER ${INSTALL_FOLDER} -JAVA ${JAVA_HOME}/bin/java ${others}
 popd
 
