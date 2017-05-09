@@ -68,6 +68,9 @@ BUILD_TIMESTAMP=`date -u +%Y-%m-%d_%H-%M-%S`
 SRC_PATH=${WORKSPACE}/sources
 TRG_PATH=${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_TIMESTAMP}-B${BUILD_NUMBER}
 
+# location for downloaded installers
+TMPDIR=/tmp
+
 # file from which to pull a list of devstudio installers to install
 INSTALLERS_LISTFILE=${SRC_PATH}/install.devstudio.list.txt
 
@@ -87,6 +90,7 @@ while [[ "$#" -gt 0 ]]; do
     '-EXCLUDE_IUS') EXCLUDE_IUS="$2"; shift 1;;
     '-STREAM_NAME') STREAM_NAME="$2"; shift 1;;
     '-DESTINATION') DESTINATION="$2"; shift 1;; # override for devstudio publishing, eg., devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+    '-TMPDIR') TMPDIR="$2"; shift 1;; # path to where we're temporarily storing installers (eg., in WORKSPACE/devstudio_installers)
     *) others="$others $1"; shift 0;;
   esac
   shift 1
@@ -182,7 +186,7 @@ publish ()
 pushd ${SRC_PATH}
   # do devstudio installs so we can compare them
   . ${SRC_PATH}/install.devstudio.sh -INSTALLERS_LISTFILE ${INSTALLERS_LISTFILE} ${INSTALLERS} -INSTALLER_NIGHTLY_FOLDER ${INSTALLER_NIGHTLY_FOLDER} \
-    -INSTALL_FOLDER ${INSTALL_FOLDER} -JAVA ${JAVA_HOME}/bin/java ${others}
+    -INSTALL_FOLDER ${INSTALL_FOLDER} -JAVA ${JAVA_HOME}/bin/java ${others} -TMPDIR ${TMPDIR}
 popd
 
 # wipe any old builds
