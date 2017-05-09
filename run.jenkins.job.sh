@@ -80,7 +80,7 @@ while [[ "$#" -gt 0 ]]; do
     '-JAVA_HOME') JAVA_HOME="$2"; shift 1;;
     '-M2_HOME') M2_HOME="$2"; shift 1;;
     '-UPSTREAM_JOB') UPSTREAM_JOB="$2"; shift 1;;
-    '-INSTALLERS') INSTALLERS="-INSTALLERS \"$2\""; shift 1;;
+    '-INSTALLERS') INSTALLERS="-INSTALLERS $2"; shift 1;;
     '-INSTALL_FOLDER') INSTALL_FOLDER="$2"; shift 1;;
     '-INSTALLER_NIGHTLY_FOLDER') INSTALLER_NIGHTLY_FOLDER="$2"; shift 1;;
     '-INSTALLERS_LISTFILE') INSTALLERS_LISTFILE="$2"; shift 1;;
