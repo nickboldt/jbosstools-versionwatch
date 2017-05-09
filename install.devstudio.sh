@@ -136,6 +136,8 @@ installDevstudio() {
   if [[ -f ${remoteJar} ]]; then # ssh mounted access to remote file
     echo "${remoteJar} on locally mounted drive, so run from there directly"
     ${JAVA} ${others} -jar ${remoteJar} ${INSTALL_FOLDER}/devstudio-${version}.install.xml
+  elif [[ -f ${TMPDIR}/${localJar} ]]; then
+    ${JAVA} ${others} -jar ${TMPDIR}/${localJar} ${INSTALL_FOLDER}/devstudio-${version}.install.xml
   elif [[ ! -f ${TMPDIR}/${localJar} ]] && [[ ${BASE_URL} ]]; then # get the remote jar
     # download the installer 
     echo "${localJar} not found, so get it from ${remoteJar}"
