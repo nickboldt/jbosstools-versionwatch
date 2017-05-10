@@ -182,8 +182,11 @@ publish ()
 
 pushd ${SRC_PATH}
   # do devstudio installs so we can compare them
-  . ${SRC_PATH}/install.devstudio.sh -INSTALLERS_LISTFILE ${INSTALLERS_LISTFILE} ${INSTALLERS} -INSTALLER_NIGHTLY_FOLDER ${INSTALLER_NIGHTLY_FOLDER} \
-    -INSTALL_FOLDER ${INSTALL_FOLDER} -JAVA ${JAVA_HOME}/bin/java ${others} -TMPDIR ${TMPDIR}
+  INFCMD=""
+  if [[ ${INSTALLER_NIGHTLY_FOLDER} ]]; then
+    INFCMD="-INSTALLER_NIGHTLY_FOLDER ${INSTALLER_NIGHTLY_FOLDER}"
+  . ${SRC_PATH}/install.devstudio.sh -INSTALLERS_LISTFILE ${INSTALLERS_LISTFILE} ${INSTALLERS} \
+    -INSTALL_FOLDER ${INSTALL_FOLDER} -JAVA ${JAVA_HOME}/bin/java ${others} -TMPDIR ${TMPDIR} ${INFCMD}
 popd
 
 # wipe any old builds
