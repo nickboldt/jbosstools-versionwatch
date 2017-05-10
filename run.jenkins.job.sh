@@ -183,8 +183,7 @@ publish ()
 pushd ${SRC_PATH}
   # do devstudio installs so we can compare them
   INFCMD=""
-  if [[ ${INSTALLER_NIGHTLY_FOLDER} ]]; then
-    INFCMD="-INSTALLER_NIGHTLY_FOLDER ${INSTALLER_NIGHTLY_FOLDER}"
+  if [[ ${INSTALLER_NIGHTLY_FOLDER} ]]; then INFCMD="-INSTALLER_NIGHTLY_FOLDER ${INSTALLER_NIGHTLY_FOLDER}"; fi
   . ${SRC_PATH}/install.devstudio.sh -INSTALLERS_LISTFILE ${INSTALLERS_LISTFILE} ${INSTALLERS} \
     -INSTALL_FOLDER ${INSTALL_FOLDER} -JAVA ${JAVA_HOME}/bin/java ${others} -TMPDIR ${TMPDIR} ${INFCMD}
 popd
