@@ -143,7 +143,7 @@ installDevstudio() {
     echo "${localJar} not found, so get it from ${remoteJar}"
     pushd ${TMPDIR}/ >/dev/null
         if [[ ${remoteJar} == "http"* ]] || [[ ${remoteJar} == "ftp"* ]]; then
-            wget -nc ${remoteJar}
+            wget -q -nc ${remoteJar}
         else
             rsync -arzq --protocol=28 ${remoteJar} ${TMPDIR}/${localJar}
         fi
