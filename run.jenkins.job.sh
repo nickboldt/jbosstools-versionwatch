@@ -40,14 +40,15 @@ done
 # Location where devstudio installations will be put
 # On some CI slaves, HUDSON_STATIC_ENV = /home/hudson/static_build_env but we can't guarantee that
 # so use sshfs mount instead and fall back if required
-if [[ -d ${WORKSPACE}/RHDS-ssh ]]; then 
-	# see http://www.qa.jboss.com/binaries/devstudio/static_build_env/versionwatch/installations/
-	INSTALL_FOLDER=${WORKSPACE}/RHDS-ssh/static_build_env/versionwatch/installations
-elif [[ ${HUDSON_STATIC_ENV} ]]; then 
-	INSTALL_FOLDER=${HUDSON_STATIC_ENV}/devstudio/versionwatch/installations
-else
+# # performance reading from ssh mounted drive is terrible so disable this
+# if [[ -d ${WORKSPACE}/RHDS-ssh ]]; then 
+# 	# see http://www.qa.jboss.com/binaries/devstudio/static_build_env/versionwatch/installations/
+# 	INSTALL_FOLDER=${WORKSPACE}/RHDS-ssh/static_build_env/versionwatch/installations
+# elif [[ ${HUDSON_STATIC_ENV} ]]; then 
+# 	INSTALL_FOLDER=${HUDSON_STATIC_ENV}/devstudio/versionwatch/installations
+# else
 	INSTALL_FOLDER=${WORKSPACE}/devstudio/versionwatch/installations
-fi
+# fi
 
 # To generate a report containing fewer bundles/features, set a regex that will match only those you want in the report, eg., .*(hibernate|jboss|xulrunner).* or match everything with .*
 INCLUDE_IUS=".*(hibernate|jboss|xulrunner).*"
@@ -168,9 +169,9 @@ publish ()
 
   # publish now depends on having publish/rsync.sh fetched to workspace already -- see 
   # https://repository.jboss.org/nexus/content/groups/public/org/jboss/tools/releng/jbosstools-releng-publish/
-  . ${WORKSPACE}/sources/publish/rsync.sh -s ${SRC_PATH}/target/ -t ${TRG_PATH}/ -DESTINATION ${DESTINATION} -i "*report_*.html"
-  . ${WORKSPACE}/sources/publish/rsync.sh -s ${SRC_PATH}/target/ -t ${TRG_PATH}/ -DESTINATION ${DESTINATION} -i "*.png"
-  . ${WORKSPACE}/sources/publish/rsync.sh -s ${SRC_PATH}/target/ -t ${TRG_PATH}/ -DESTINATION ${DESTINATION} -i "*.css"
+  . ${WORKSPACE}/jbosstools-build-ci/publish/rsync.sh -s ${SRC_PATH}/target/ -t ${TRG_PATH}/ -DESTINATION ${DESTINATION} -i "*report_*.html"
+  . ${WORKSPACE}/jbosstools-build-ci/publish/rsync.sh -s ${SRC_PATH}/target/ -t ${TRG_PATH}/ -DESTINATION ${DESTINATION} -i "*.png"
+  . ${WORKSPACE}/jbosstools-build-ci/publish/rsync.sh -s ${SRC_PATH}/target/ -t ${TRG_PATH}/ -DESTINATION ${DESTINATION} -i "*.css"
 
   # create links to html files (must be all on one line)
   DESCRIPTION="${DESCRIPTION}"'<li>'${label}' <a href="'${URL}'/report_detailed_'${name}'.html">Details</a>,\
