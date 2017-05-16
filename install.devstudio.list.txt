@@ -1,1 +1,2 @@
+http://wonka.mw.lab.eng.bos.redhat.com/rhd/devstudio/10.0/staging/builds/devstudio-10.4.0.GA-build-product/2017-05-11_18-35-44-B62/all/devstudio-10.4.0.GA-installer-standalone.jar
 https://devstudio.redhat.com/static/10.0/stable/builds/devstudio-10.3.0.GA-build-product/latest/all/devstudio-10.3.0.GA-v20170218-1636-B94-installer-standalone.jar
