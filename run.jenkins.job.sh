@@ -23,35 +23,13 @@ UPSTREAM_JOB=""
 
 # CSV list of additional installer jars to use. Will also use list of installers in install.devstudio.list.txt.
 # If the target folder already exists, installation will be skipped.<br/>
-#  eg., ${WORKSPACE}/RHDS-ssh/builds/stable/8.0.0.GA-build-core/jboss-devstudio-8.0.0.GA-v20141020-1042-B317-installer-standalone.jar
+#  eg., http://path/to/*-installer-standalone.jar
 INSTALLERS=""
 
-# attempt to ssh mount the RHDS  mount
-JBDS=devstudio@10.5.105.197:/www_htdocs/devstudio
-RHDS="hudson@dev90.hosts.mwqe.eng.bos.redhat.com:/qa/services/http/binaries/devstudio" # use dev90 as of 2017-03-15
-for mnt in RHDS JBDS; do 
-	if [[ ! -d ${WORKSPACE}/${mnt}-ssh ]]; then
-		if [[ $(file ${WORKSPACE}/${mnt}-ssh 2>&1) == *"No such file or directory"* ]]; then mkdir -p ${WORKSPACE}/${mnt}-ssh; 
-		elif [[ $(file ${WORKSPACE}/${mnt}-ssh 2>&1) == *"Transport endpoint is not connected"* ]]; then fusermount -uz ${WORKSPACE}/${mnt}-ssh; fi
-		if [[ ! -d ${WORKSPACE}/${mnt}-ssh/images ]]; then  sshfs ${!mnt} ${WORKSPACE}/${mnt}-ssh; fi
-	fi
-done
-
-# Location where devstudio installations will be put
-# On some CI slaves, HUDSON_STATIC_ENV = /home/hudson/static_build_env but we can't guarantee that
-# so use sshfs mount instead and fall back if required
-# # performance reading from ssh mounted drive is terrible so disable this
-# if [[ -d ${WORKSPACE}/RHDS-ssh ]]; then 
-# 	# see http://www.qa.jboss.com/binaries/devstudio/static_build_env/versionwatch/installations/
-# 	INSTALL_FOLDER=${WORKSPACE}/RHDS-ssh/static_build_env/versionwatch/installations
-# elif [[ ${HUDSON_STATIC_ENV} ]]; then 
-# 	INSTALL_FOLDER=${HUDSON_STATIC_ENV}/devstudio/versionwatch/installations
-# else
-	INSTALL_FOLDER=${WORKSPACE}/devstudio/versionwatch/installations
-# fi
+INSTALL_FOLDER=${WORKSPACE}/devstudio/versionwatch/installations
 
 # To generate a report containing fewer bundles/features, set a regex that will match only those you want in the report, eg., .*(hibernate|jboss|xulrunner).* or match everything with .*
-INCLUDE_IUS=".*(hibernate|jboss|xulrunner).*"
+INCLUDE_IUS=".*(hibernate|jboss).*"
 
 DESCRIPTION=""
 
@@ -116,16 +94,6 @@ if [[ ! ${UPSTREAM_JOB} ]]; then
   fi
 fi
 
-for mnt in RHDS JBDS; do
-  if [[ ! ${INSTALLER_NIGHTLY_FOLDER} ]]; then
-    # Folder from which to install the latest nightly devstudio build, and run the version watch comparing this latest against
-    # the baseline INSTALLERS. This will always overwrite if the version has changed since last time.
-    if [[ -f $(find ${WORKSPACE}/${mnt}-ssh/${STREAM_NAME}/snapshots/builds/${UPSTREAM_JOB}/latest/all/ -maxdepth 1 -type f -name "*installer*.jar" -a -not -name "*latest*"  | head -1) ]]; then # devstudio 9+
-      INSTALLER_NIGHTLY_FOLDER=${WORKSPACE}/${mnt}-ssh/${STREAM_NAME}/snapshots/builds/${UPSTREAM_JOB}/latest/all/
-      echo "[INFO] [1] use INSTALLER_NIGHTLY_FOLDER = ${INSTALLER_NIGHTLY_FOLDER}"
-    fi
-  fi
-done
 if [[ ! ${INSTALLER_NIGHTLY_FOLDER} ]] && [[ ! ${INSTALLERS} ]]; then
   echo "[WARNING] No devstudio CI folder defined in INSTALLER_NIGHTLY_FOLDER = ${INSTALLER_NIGHTLY_FOLDER}"
   echo "[WARNING] No devstudio CI build defined in INSTALLERS = ${INSTALLERS}"
