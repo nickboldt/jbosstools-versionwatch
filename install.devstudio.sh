@@ -103,6 +103,9 @@ if [[ ! -d ${INSTALL_FOLDER} ]]; then
   mkdir -p ${INSTALL_FOLDER}
 fi
 
+# in case doesn't yet exist, create it
+mkdir -p ${TMPDIR}
+
 # define install config file
 installDevstudio() {
   version=${1}
