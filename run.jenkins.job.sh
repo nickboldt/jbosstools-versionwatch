@@ -33,7 +33,7 @@ INCLUDE_IUS=".*(hibernate|jboss).*"
 
 DESCRIPTION=""
 
-DESTINATION=devstudio@10.5.105.197:/www_htdocs/devstudio # or tools@filemgmt.jboss.org:/downloads_htdocs/tools # or /qa/services/http/binaries/RHDS
+DESTINATION=devstudio@10.5.105.197:/www_htdocs/devstudio # or tools@filemgmt.jboss.org:/downloads_htdocs/tools
 
 # include and exclude patterns for which devstudio installs to use when producing the version diff report
 INCLUDE_VERSIONS="\d+\.\d+\.\d+"
@@ -79,8 +79,6 @@ if [[ ${DESTINATION} == "tools@"* ]]; then # JBT public
   URL=http://download.jboss.org/jbosstools/${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_TIMESTAMP}-B${BUILD_NUMBER}
 elif [[ ${DESTINATION} == "devstudio@"* ]]; then # devstudio public
   URL=https://devstudio.redhat.com/${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_TIMESTAMP}-B${BUILD_NUMBER}
-elif [[ ${DESTINATION} == *"binaries/devstudio" ]] || [[ ${DESTINATION} == *"binaries/RHDS" ]]; then # devstudio internal
-  URL=http://www.qa.jboss.com/binaries/devstudio/${STREAM_NAME}/snapshots/builds/${JOB_NAME}/${BUILD_TIMESTAMP}-B${BUILD_NUMBER}
 else # local file in workspace
   URL="ws/sources/target";
 fi
